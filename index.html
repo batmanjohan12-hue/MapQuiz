@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Map Quiz — El Juego de Geografía</title>
+  <meta name="description" content="Pon a prueba tu conocimiento geográfico. Adivina países por sus banderas, capitales y población. ¡Compite por el primer lugar!" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%232563eb'/><path d='M20 40c10-10 30-10 40 0s20 20 20 30' stroke='white' stroke-width='4' fill='none'/><circle cx='60' cy='35' r='5' fill='white'/></svg>" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     TOAST DE FEEDBACK (global)
+════════════════════════════════════════════════════════ -->
+<div id="feedback-toast" class="feedback-toast" role="alert" aria-live="polite"></div>
+
+<!-- ═══════════════════════════════════════════════════════
+     MODAL DE RANKING
+════════════════════════════════════════════════════════ -->
+<div id="ranking-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Tabla de clasificación">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>🏆 Tabla de Clasificación</h2>
+      <button id="btn-close-ranking" class="btn btn-ghost btn-sm" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="ranking-tabs" role="tablist">
+        <button class="tab-btn active" data-tab="todos"     role="tab">🌍 Todos</button>
+        <button class="tab-btn"        data-tab="banderas"  role="tab">🏳️ Banderas</button>
+        <button class="tab-btn"        data-tab="capitales" role="tab">🏙️ Capitales</button>
+        <button class="tab-btn"        data-tab="poblacion" role="tab">👥 Población</button>
+        <button class="tab-btn"        data-tab="banderas_inverso" role="tab">🔄🏳️ Inverso</button>
+      </div>
+      <table class="ranking-table" aria-label="Clasificación">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Jugador</th>
+            <th>Puntos</th>
+            <th>Modo</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody id="ranking-tbody">
+          <tr><td colspan="5" class="ranking-empty">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     PANTALLA 1 — MENÚ PRINCIPAL
+════════════════════════════════════════════════════════ -->
+<main id="screen-menu" class="screen" role="main">
+  <div class="top-controls">
+    <button id="btn-theme" class="btn-icon-toggle" aria-label="Cambiar tema" title="Cambiar tema">🌙</button>
+    <button id="btn-mute" class="btn-icon-toggle" aria-label="Silenciar sonido" title="Silenciar sonido">🔊</button>
+  </div>
+
+  <div class="menu-grid-layout">
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="menu-left-col">
+      <!-- Header -->
+      <header class="menu-header">
+        <div class="logo">
+          <div class="logo-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+          </div>
+          <div>
+            <div class="logo-text">Map Quiz</div>
+            <div class="logo-tag">El juego de geografía mundial</div>
+          </div>
+        </div>
+        <p class="menu-subtitle">
+          Pon a prueba tu conocimiento geográfico.<br>
+          Banderas · Capitales · Población
+        </p>
+      </header>
+
+      <!-- Selección de modo -->
+      <section class="menu-section" aria-labelledby="lbl-modo">
+        <h2 id="lbl-modo">Elige un modo de juego</h2>
+        <div class="modo-grid" role="radiogroup" aria-labelledby="lbl-modo">
+
+          <div class="modo-card" data-modo="banderas" role="radio" aria-checked="true" tabindex="0" id="modo-banderas">
+            <div class="modo-emoji">🏳️</div>
+            <div class="modo-nombre">Banderas</div>
+            <div class="modo-desc">Identifica el país por su bandera</div>
+          </div>
+
+          <div class="modo-card" data-modo="capitales" role="radio" aria-checked="false" tabindex="0" id="modo-capitales">
+            <div class="modo-emoji">🏙️</div>
+            <div class="modo-nombre">Capitales</div>
+            <div class="modo-desc">Encuentra la capital del país</div>
+          </div>
+
+          <div class="modo-card" data-modo="poblacion" role="radio" aria-checked="false" tabindex="0" id="modo-poblacion">
+            <div class="modo-emoji">👥</div>
+            <div class="modo-nombre">Población</div>
+            <div class="modo-desc">¿Qué país tiene más habitantes?</div>
+          </div>
+
+          <div class="modo-card" data-modo="banderas_inverso" role="radio" aria-checked="false" tabindex="0" id="modo-banderas-inverso">
+            <div class="modo-emoji">🔄🏳️</div>
+            <div class="modo-nombre">Banderas Inverso</div>
+            <div class="modo-desc">Identifica la bandera por el nombre del país</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Selección de formato de juego -->
+      <section class="menu-section" aria-labelledby="lbl-formato">
+        <h2 id="lbl-formato">Elige un formato de juego</h2>
+        <div class="formato-grid" role="radiogroup" aria-labelledby="lbl-formato">
+
+          <div class="formato-card selected" data-formato="clasico" role="radio" aria-checked="true" tabindex="0" id="formato-clasico">
+            <div class="formato-emoji">⏱️</div>
+            <div class="formato-nombre">Clásico</div>
+            <div class="formato-desc">10 preguntas con 15s cada una. 3 vidas.</div>
+          </div>
+
+          <div class="formato-card" data-formato="supervivencia" role="radio" aria-checked="false" tabindex="0" id="formato-supervivencia">
+            <div class="formato-emoji">❤️</div>
+            <div class="formato-nombre">Supervivencia</div>
+            <div class="formato-desc">Preguntas ilimitadas. Gana vidas y evita fallar.</div>
+          </div>
+
+          <div class="formato-card" data-formato="contrareloj" role="radio" aria-checked="false" tabindex="0" id="formato-contrareloj">
+            <div class="formato-emoji">⚡</div>
+            <div class="formato-nombre">Contra Reloj</div>
+            <div class="formato-desc">60 segundos globales. Acierto (+2s), fallo (-5s).</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Selección de región -->
+      <section class="menu-section" aria-labelledby="lbl-region">
+        <h2 id="lbl-region">Filtrar por región</h2>
+        <div class="region-grid" role="radiogroup" aria-labelledby="lbl-region">
+          <button class="region-pill" data-region="mundo"         id="region-mundo">         🌍 Todo el mundo</button>
+          <button class="region-pill" data-region="america_norte" id="region-america-norte"> 🌎 América del Norte</button>
+          <button class="region-pill" data-region="america_sur"   id="region-america-sur">   🌎 América del Sur</button>
+          <button class="region-pill" data-region="europa"        id="region-europa">        🌍 Europa</button>
+          <button class="region-pill" data-region="asia"          id="region-asia">          🌏 Asia</button>
+          <button class="region-pill" data-region="africa"        id="region-africa">        🌍 África</button>
+          <button class="region-pill" data-region="oceania"       id="region-oceania">       🌏 Oceanía</button>
+        </div>
+      </section>
+
+      <!-- Footer de acciones -->
+      <footer class="menu-footer">
+        <button id="btn-jugar" class="btn btn-primary btn-lg" aria-label="Iniciar partida">
+          ¡Jugar ahora! 🚀
+        </button>
+        <div class="menu-links">
+          <button id="btn-atlas-menu" class="btn btn-ghost btn-sm">📖 Atlas de Geografía</button>
+          <button id="btn-ranking-menu" class="btn btn-ghost btn-sm">🏆 Clasificación</button>
+        </div>
+      </footer>
+    </div>
+
+    <!-- COLUMNA DERECHA -->
+    <div class="menu-right-col">
+      <!-- Panel País del Día -->
+      <div class="side-panel glass" id="panel-pais-dia">
+        <div class="panel-header">🌟 País del Día</div>
+        <div class="panel-body text-center" style="display:flex; flex-direction:column; align-items:center;">
+          <img id="pd-bandera" style="width: 80px; height: auto; border-radius: 4px; box-shadow: var(--shadow); margin-bottom: 12px; margin-top:10px;" alt="Bandera del país del día" />
+          <div id="pd-nombre" style="font-family: var(--ff-head); font-weight: bold; font-size: 1.3rem;">Cargando...</div>
+          <div id="pd-capital" style="color: var(--text-2); font-size: 0.95rem; margin-top: 4px;"></div>
+          <div id="pd-poblacion" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;"></div>
+        </div>
+      </div>
+
+      <!-- Panel Curiosidades -->
+      <div class="side-panel glass" id="panel-curiosidades">
+        <div class="panel-header">💡 ¿Sabías que...?</div>
+        <div class="panel-body" style="font-style: italic; color: var(--text-2); min-height: 80px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.5;">
+          <span id="curiosidad-texto">Cargando curiosidad...</span>
+        </div>
+      </div>
+
+      <!-- Panel Stats y Mini Ranking -->
+      <div class="side-panel glass">
+        <div class="panel-header" style="margin-bottom:12px;">🏆 Top 3 Clasificación</div>
+        <div id="mini-ranking-list" style="display:flex; flex-direction:column; gap: 8px;">
+          <div style="color: var(--text-muted); font-size: 0.9rem; text-align:center; padding: 10px 0;">Nadie ha jugado aún. ¡Sé el primero!</div>
+        </div>
+
+        <div class="panel-header" style="margin-top: 24px; margin-bottom:12px;">📈 Tus Estadísticas Rápidas</div>
+        <div class="quick-stats-mini" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div style="background:var(--bg-2); padding:10px; border-radius:var(--r-md); text-align:center;">
+            <div class="qstat-lbl" style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Partidas</div>
+            <div class="qstat-val-mini" id="qs-partidas" style="font-weight:bold; color:var(--primary); font-size:1.2rem;">0</div>
+          </div>
+          <div style="background:var(--bg-2); padding:10px; border-radius:var(--r-md); text-align:center;">
+            <div class="qstat-lbl" style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Aciertos</div>
+            <div class="qstat-val-mini" id="qs-aciertos" style="font-weight:bold; color:var(--primary); font-size:1.2rem;">0</div>
+          </div>
+          <div style="background:var(--bg-2); padding:10px; border-radius:var(--r-md); text-align:center;">
+            <div class="qstat-lbl" style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Mejor</div>
+            <div class="qstat-val-mini" id="qs-best" style="font-weight:bold; color:var(--primary); font-size:1.2rem;">0</div>
+          </div>
+          <div style="background:var(--bg-2); padding:10px; border-radius:var(--r-md); text-align:center;">
+            <div class="qstat-lbl" style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Racha</div>
+            <div class="qstat-val-mini" id="qs-racha" style="font-weight:bold; color:var(--primary); font-size:1.2rem;">0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════════════════════
+     PANTALLA 2 — JUEGO
+════════════════════════════════════════════════════════ -->
+<section id="screen-game" class="screen" role="main" aria-label="Partida en curso">
+
+  <!-- HUD -->
+  <div class="hud" role="status" aria-live="polite">
+    <div class="hud-left">
+      <div id="hud-lives" class="lives-display" aria-label="Vidas restantes"></div>
+      <div id="hud-streak" class="streak-display" aria-label="Racha">
+        <span class="streak-fire">🔥</span>
+        <span id="streak-num">0</span>
+      </div>
+    </div>
+    <div style="font-size:.78rem;color:var(--text-muted)" id="game-modo-label"></div>
+    <div class="hud-right">
+      <button id="btn-mute-game" class="btn-mute-toggle-game" aria-label="Silenciar sonido" title="Silenciar sonido">🔊</button>
+      <div id="hud-score" class="score-display" aria-label="Puntaje">0</div>
+      <button id="btn-salir-juego" class="btn btn-ghost btn-sm" aria-label="Salir del juego" title="Salir">✕</button>
+    </div>
+  </div>
+
+  <!-- Barra de progreso -->
+  <div class="progress-bar-wrap" aria-label="Progreso de la partida">
+    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="10">
+      <div id="progress-fill" class="progress-fill" style="width:0%"></div>
+    </div>
+    <div id="progress-label" class="progress-label">0 / 10</div>
+  </div>
+
+  <!-- Área de juego -->
+  <div class="game-area">
+
+    <!-- Timer -->
+    <div class="timer-wrap" aria-label="Tiempo restante">
+      <div class="timer-bar">
+        <div id="timer-fill" class="timer-fill" style="width:100%"></div>
+      </div>
+      <div id="timer-num" class="timer-num" aria-live="polite">15</div>
+    </div>
+
+    <!-- Contenido dinámico (pregunta + opciones) -->
+    <div id="game-area-content" style="display:contents"></div>
+
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PANTALLA 3 — RESULTADOS
+════════════════════════════════════════════════════════ -->
+<section id="screen-results" class="screen" role="main" aria-label="Resultados de la partida">
+
+  <!-- Encabezado -->
+  <div class="results-header">
+    <div id="res-emoji"  class="results-emoji"  aria-hidden="true">🏆</div>
+    <h1 id="res-title"  class="results-title">¡Excelente!</h1>
+    <p  id="res-sub"    class="results-sub"></p>
+    <p  id="res-modo"   style="font-size:.8rem;color:var(--text-muted);margin-top:8px"></p>
+  </div>
+
+  <!-- Puntaje grande -->
+  <div class="score-big glass" aria-label="Puntaje final">
+    <div id="res-score-val" class="score-big-val">0</div>
+    <div class="score-big-lbl">puntos totales</div>
+  </div>
+
+  <!-- Stats de la partida -->
+  <div class="stats-grid" role="list" aria-label="Estadísticas de la partida">
+    <div class="stat-card" role="listitem">
+      <div id="res-stat-aciertos" class="stat-val">0/10</div>
+      <div class="stat-lbl">Aciertos</div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div id="res-stat-pct" class="stat-val">0%</div>
+      <div class="stat-lbl">Precisión</div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div id="res-stat-racha" class="stat-val">0</div>
+      <div class="stat-lbl">Racha máxima 🔥</div>
+    </div>
+    <div class="stat-card" role="listitem">
+      <div id="res-stat-puntaje" class="stat-val">0</div>
+      <div class="stat-lbl">Mejor puntaje</div>
+    </div>
+  </div>
+
+  <!-- Guardar en ranking -->
+  <div class="save-score-form glass" aria-label="Guardar puntuación">
+    <h3>💾 Guardar en clasificación</h3>
+    <p style="font-size:.85rem;color:var(--text-2)">¡Introduce tu nombre para guardar tu puntaje!</p>
+    <input
+      id="input-nombre"
+      type="text"
+      placeholder="Tu nombre aquí..."
+      maxlength="20"
+      autocomplete="off"
+      aria-label="Tu nombre"
+    />
+    <button id="btn-guardar" class="btn btn-primary" aria-label="Guardar puntaje">
+      Guardar puntaje ✨
+    </button>
+    <p id="msg-guardado" style="display:none;color:var(--success);font-size:.9rem;text-align:center">
+      ✅ ¡Puntaje guardado con éxito!
+    </p>
+  </div>
+
+  <!-- Historial de respuestas de la partida -->
+  <div class="history-accordion glass" id="history-accordion" aria-label="Revisión de respuestas">
+    <button class="accordion-trigger" id="btn-toggle-history">
+      <span>🔍 Revisar mis respuestas</span>
+      <span class="chevron">▼</span>
+    </button>
+    <div class="accordion-content" id="history-content" style="max-height:0;overflow:hidden;transition:max-height var(--t-mid) ease;">
+      <ul class="history-list" id="history-list">
+        <!-- Se llena dinámicamente -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Acciones -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+    <button id="btn-jugar-de-nuevo" class="btn btn-primary" aria-label="Jugar de nuevo con el mismo modo">
+      🔄 Jugar de nuevo
+    </button>
+    <button id="btn-ranking-results" class="btn btn-ghost" aria-label="Ver tabla de clasificación">
+      🏆 Clasificación
+    </button>
+    <button id="btn-cambiar-modo" class="btn btn-ghost" aria-label="Ir al menú principal">
+      🏠 Menú principal
+    </button>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PANTALLA 4 — ATLAS DE GEOGRAFÍA
+════════════════════════════════════════════════════════ -->
+<section id="screen-atlas" class="screen" role="main" aria-label="Atlas de Geografía">
+
+  <header class="atlas-header">
+    <div class="atlas-header-top">
+      <button id="btn-salir-atlas" class="btn btn-ghost btn-sm">🏠 Volver</button>
+      <h1 class="atlas-title">📖 Atlas Geográfico</h1>
+      <div class="atlas-header-spacer"></div>
+    </div>
+    <p class="atlas-sub">Explora banderas, capitales y poblaciones de todos los países del mundo.</p>
+  </header>
+
+  <div class="atlas-controls glass">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="atlas-search" placeholder="Buscar por país o capital..." aria-label="Buscar país o capital" />
+    </div>
+    <div class="filter-wrap">
+      <select id="atlas-filter-region" class="atlas-select" aria-label="Filtrar por región">
+        <option value="mundo">🌍 Todo el mundo</option>
+        <option value="america_norte">🌎 América del Norte</option>
+        <option value="america_sur">🌎 América del Sur</option>
+        <option value="europa">🌍 Europa</option>
+        <option value="asia">🌏 Asia</option>
+        <option value="africa">🌍 África</option>
+        <option value="oceania">🌏 Oceanía</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="atlas-container">
+    <div class="atlas-grid" id="atlas-grid">
+      <!-- Se llena dinámicamente con JS -->
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>

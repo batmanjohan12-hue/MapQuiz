@@ -1,0 +1,224 @@
+// ============================================================
+//  MAP QUIZ — Base de datos de países
+// ============================================================
+
+const PAISES = [
+  // ── AMÉRICA DEL NORTE ────────────────────────────────────
+  { id:  1, nombre: "México",               code: "mx", capital: "Ciudad de México",    region: "america_norte", poblacion: 128932753 },
+  { id:  2, nombre: "Canadá",               code: "ca", capital: "Ottawa",              region: "america_norte", poblacion: 38005238  },
+  { id:  3, nombre: "Estados Unidos",       code: "us", capital: "Washington D.C.",     region: "america_norte", poblacion: 331002651 },
+  { id:  4, nombre: "Cuba",                 code: "cu", capital: "La Habana",           region: "america_norte", poblacion: 11326616  },
+  { id:  5, nombre: "Guatemala",            code: "gt", capital: "Ciudad de Guatemala", region: "america_norte", poblacion: 17109746  },
+  { id:  6, nombre: "Honduras",             code: "hn", capital: "Tegucigalpa",         region: "america_norte", poblacion: 9904607   },
+  { id:  7, nombre: "El Salvador",          code: "sv", capital: "San Salvador",        region: "america_norte", poblacion: 6486205   },
+  { id:  8, nombre: "Nicaragua",            code: "ni", capital: "Managua",             region: "america_norte", poblacion: 6624554   },
+  { id:  9, nombre: "Costa Rica",           code: "cr", capital: "San José",            region: "america_norte", poblacion: 5094118   },
+  { id: 10, nombre: "Panamá",               code: "pa", capital: "Ciudad de Panamá",    region: "america_norte", poblacion: 4351267   },
+  { id: 11, nombre: "Jamaica",              code: "jm", capital: "Kingston",            region: "america_norte", poblacion: 2961167   },
+  { id: 12, nombre: "República Dominicana", code: "do", capital: "Santo Domingo",       region: "america_norte", poblacion: 10847910  },
+  { id: 13, nombre: "Haití",                code: "ht", capital: "Puerto Príncipe",     region: "america_norte", poblacion: 11402528  },
+  { id: 14, nombre: "Trinidad y Tobago",    code: "tt", capital: "Puerto España",       region: "america_norte", poblacion: 1399488   },
+  { id: 15, nombre: "Bahamas",              code: "bs", capital: "Nasáu",               region: "america_norte", poblacion: 393244    },
+  { id: 16, nombre: "Belice",               code: "bz", capital: "Belmopán",            region: "america_norte", poblacion: 397628    },
+
+  // ── AMÉRICA DEL SUR ──────────────────────────────────────
+  { id: 17, nombre: "Brasil",               code: "br", capital: "Brasilia",            region: "america_sur",   poblacion: 212559417 },
+  { id: 18, nombre: "Colombia",             code: "co", capital: "Bogotá",              region: "america_sur",   poblacion: 50882891  },
+  { id: 19, nombre: "Argentina",            code: "ar", capital: "Buenos Aires",        region: "america_sur",   poblacion: 45195774  },
+  { id: 20, nombre: "Perú",                 code: "pe", capital: "Lima",                region: "america_sur",   poblacion: 32971854  },
+  { id: 21, nombre: "Venezuela",            code: "ve", capital: "Caracas",             region: "america_sur",   poblacion: 28435943  },
+  { id: 22, nombre: "Chile",                code: "cl", capital: "Santiago",            region: "america_sur",   poblacion: 19116201  },
+  { id: 23, nombre: "Ecuador",              code: "ec", capital: "Quito",               region: "america_sur",   poblacion: 17643054  },
+  { id: 24, nombre: "Bolivia",              code: "bo", capital: "Sucre",               region: "america_sur",   poblacion: 11673021  },
+  { id: 25, nombre: "Paraguay",             code: "py", capital: "Asunción",            region: "america_sur",   poblacion: 7132538   },
+  { id: 26, nombre: "Uruguay",              code: "uy", capital: "Montevideo",          region: "america_sur",   poblacion: 3473730   },
+  { id: 27, nombre: "Guyana",               code: "gy", capital: "Georgetown",          region: "america_sur",   poblacion: 786552    },
+  { id: 28, nombre: "Surinam",              code: "sr", capital: "Paramaribo",          region: "america_sur",   poblacion: 586632    },
+
+  // ── EUROPA ───────────────────────────────────────────────
+  { id: 29, nombre: "Francia",              code: "fr", capital: "París",               region: "europa",        poblacion: 65273511  },
+  { id: 30, nombre: "Alemania",             code: "de", capital: "Berlín",              region: "europa",        poblacion: 83783942  },
+  { id: 31, nombre: "España",               code: "es", capital: "Madrid",              region: "europa",        poblacion: 46754778  },
+  { id: 32, nombre: "Italia",               code: "it", capital: "Roma",                region: "europa",        poblacion: 60461826  },
+  { id: 33, nombre: "Reino Unido",          code: "gb", capital: "Londres",             region: "europa",        poblacion: 67886011  },
+  { id: 34, nombre: "Portugal",             code: "pt", capital: "Lisboa",              region: "europa",        poblacion: 10196709  },
+  { id: 35, nombre: "Países Bajos",         code: "nl", capital: "Ámsterdam",           region: "europa",        poblacion: 17134872  },
+  { id: 36, nombre: "Bélgica",              code: "be", capital: "Bruselas",            region: "europa",        poblacion: 11589623  },
+  { id: 37, nombre: "Suiza",                code: "ch", capital: "Berna",               region: "europa",        poblacion: 8654622   },
+  { id: 38, nombre: "Austria",              code: "at", capital: "Viena",               region: "europa",        poblacion: 9006398   },
+  { id: 39, nombre: "Polonia",              code: "pl", capital: "Varsovia",            region: "europa",        poblacion: 37846611  },
+  { id: 40, nombre: "Suecia",               code: "se", capital: "Estocolmo",           region: "europa",        poblacion: 10099265  },
+  { id: 41, nombre: "Noruega",              code: "no", capital: "Oslo",                region: "europa",        poblacion: 5421241   },
+  { id: 42, nombre: "Dinamarca",            code: "dk", capital: "Copenhague",          region: "europa",        poblacion: 5792202   },
+  { id: 43, nombre: "Finlandia",            code: "fi", capital: "Helsinki",            region: "europa",        poblacion: 5540720   },
+  { id: 44, nombre: "Grecia",               code: "gr", capital: "Atenas",              region: "europa",        poblacion: 10715549  },
+  { id: 45, nombre: "Turquía",              code: "tr", capital: "Ankara",              region: "europa",        poblacion: 84339067  },
+  { id: 46, nombre: "Rusia",                code: "ru", capital: "Moscú",               region: "europa",        poblacion: 145934462 },
+  { id: 47, nombre: "Ucrania",              code: "ua", capital: "Kiev",                region: "europa",        poblacion: 43733762  },
+  { id: 48, nombre: "República Checa",      code: "cz", capital: "Praga",               region: "europa",        poblacion: 10708981  },
+  { id: 49, nombre: "Rumania",              code: "ro", capital: "Bucarest",            region: "europa",        poblacion: 19237691  },
+  { id: 50, nombre: "Hungría",              code: "hu", capital: "Budapest",            region: "europa",        poblacion: 9660351   },
+  { id: 51, nombre: "Serbia",               code: "rs", capital: "Belgrado",            region: "europa",        poblacion: 8737371   },
+  { id: 52, nombre: "Croacia",              code: "hr", capital: "Zagreb",              region: "europa",        poblacion: 4105267   },
+  { id: 53, nombre: "Irlanda",              code: "ie", capital: "Dublín",              region: "europa",        poblacion: 4937786   },
+  { id: 54, nombre: "Bulgaria",             code: "bg", capital: "Sofía",               region: "europa",        poblacion: 6948445   },
+  { id: 55, nombre: "Eslovaquia",           code: "sk", capital: "Bratislava",          region: "europa",        poblacion: 5459642   },
+  { id: 56, nombre: "Albania",              code: "al", capital: "Tirana",              region: "europa",        poblacion: 2877797   },
+  { id: 57, nombre: "Eslovenia",            code: "si", capital: "Liubliana",           region: "europa",        poblacion: 2078938   },
+  { id: 58, nombre: "Lituania",             code: "lt", capital: "Vilna",               region: "europa",        poblacion: 2722289   },
+  { id: 59, nombre: "Letonia",              code: "lv", capital: "Riga",                region: "europa",        poblacion: 1886198   },
+  { id: 60, nombre: "Estonia",              code: "ee", capital: "Tallin",              region: "europa",        poblacion: 1326535   },
+  { id: 61, nombre: "Macedonia del Norte",  code: "mk", capital: "Skopie",              region: "europa",        poblacion: 2083459   },
+  { id: 62, nombre: "Bosnia y Herzegovina", code: "ba", capital: "Sarajevo",            region: "europa",        poblacion: 3280819   },
+  { id: 63, nombre: "Luxemburgo",           code: "lu", capital: "Luxemburgo",          region: "europa",        poblacion: 625978    },
+  { id: 64, nombre: "Malta",                code: "mt", capital: "La Valeta",           region: "europa",        poblacion: 441543    },
+  { id: 65, nombre: "Islandia",             code: "is", capital: "Reikiavik",           region: "europa",        poblacion: 341243    },
+
+  // ── ASIA ─────────────────────────────────────────────────
+  { id: 66, nombre: "China",                     code: "cn", capital: "Pekín",               region: "asia", poblacion: 1439323776 },
+  { id: 67, nombre: "India",                     code: "in", capital: "Nueva Delhi",          region: "asia", poblacion: 1380004385 },
+  { id: 68, nombre: "Japón",                     code: "jp", capital: "Tokio",               region: "asia", poblacion: 126476461  },
+  { id: 69, nombre: "Corea del Sur",             code: "kr", capital: "Seúl",               region: "asia", poblacion: 51269185   },
+  { id: 70, nombre: "Indonesia",                 code: "id", capital: "Yakarta",             region: "asia", poblacion: 273523615  },
+  { id: 71, nombre: "Tailandia",                 code: "th", capital: "Bangkok",             region: "asia", poblacion: 69799978   },
+  { id: 72, nombre: "Vietnam",                   code: "vn", capital: "Hanói",               region: "asia", poblacion: 97338579   },
+  { id: 73, nombre: "Filipinas",                 code: "ph", capital: "Manila",              region: "asia", poblacion: 109581078  },
+  { id: 74, nombre: "Malasia",                   code: "my", capital: "Kuala Lumpur",        region: "asia", poblacion: 32365999   },
+  { id: 75, nombre: "Arabia Saudita",            code: "sa", capital: "Riad",                region: "asia", poblacion: 34813871   },
+  { id: 76, nombre: "Irak",                      code: "iq", capital: "Bagdad",              region: "asia", poblacion: 40222493   },
+  { id: 77, nombre: "Irán",                      code: "ir", capital: "Teherán",             region: "asia", poblacion: 83992949   },
+  { id: 78, nombre: "Israel",                    code: "il", capital: "Jerusalén",           region: "asia", poblacion: 8655535    },
+  { id: 79, nombre: "Emiratos Árabes Unidos",    code: "ae", capital: "Abu Dabi",            region: "asia", poblacion: 9890402    },
+  { id: 80, nombre: "Pakistán",                  code: "pk", capital: "Islamabad",           region: "asia", poblacion: 220892340  },
+  { id: 81, nombre: "Bangladesh",                code: "bd", capital: "Daca",                region: "asia", poblacion: 164689383  },
+  { id: 82, nombre: "Nepal",                     code: "np", capital: "Katmandú",            region: "asia", poblacion: 29136808   },
+  { id: 83, nombre: "Sri Lanka",                 code: "lk", capital: "Colombo",             region: "asia", poblacion: 21413249   },
+  { id: 84, nombre: "Singapur",                  code: "sg", capital: "Singapur",            region: "asia", poblacion: 5850342    },
+  { id: 85, nombre: "Mongolia",                  code: "mn", capital: "Ulán Bator",          region: "asia", poblacion: 3278290    },
+  { id: 86, nombre: "Kazajistán",                code: "kz", capital: "Astana",              region: "asia", poblacion: 18776707   },
+  { id: 87, nombre: "Afganistán",                code: "af", capital: "Kabul",               region: "asia", poblacion: 38928346   },
+  { id: 88, nombre: "Siria",                     code: "sy", capital: "Damasco",             region: "asia", poblacion: 17500658   },
+  { id: 89, nombre: "Yemen",                     code: "ye", capital: "Saná",               region: "asia", poblacion: 29825964   },
+  { id: 90, nombre: "Jordania",                  code: "jo", capital: "Amán",               region: "asia", poblacion: 10203134   },
+  { id: 91, nombre: "Myanmar",                   code: "mm", capital: "Naipyidó",           region: "asia", poblacion: 54409800   },
+  { id: 92, nombre: "Corea del Norte",           code: "kp", capital: "Pionyang",           region: "asia", poblacion: 25778816   },
+  { id: 93, nombre: "Camboya",                   code: "kh", capital: "Nom Pen",            region: "asia", poblacion: 16718965   },
+  { id: 94, nombre: "Uzbekistán",                code: "uz", capital: "Taskent",            region: "asia", poblacion: 33469203   },
+  { id: 95, nombre: "Azerbaiyán",                code: "az", capital: "Bakú",               region: "asia", poblacion: 10139177   },
+  { id: 96, nombre: "Georgia",                   code: "ge", capital: "Tiflis",             region: "asia", poblacion: 3989167    },
+  { id: 97, nombre: "Armenia",                   code: "am", capital: "Ereván",             region: "asia", poblacion: 2963243    },
+  { id: 98, nombre: "Qatar",                     code: "qa", capital: "Doha",               region: "asia", poblacion: 2881053    },
+  { id: 99, nombre: "Kuwait",                    code: "kw", capital: "Ciudad de Kuwait",   region: "asia", poblacion: 4270571    },
+  { id:100, nombre: "Omán",                      code: "om", capital: "Mascate",            region: "asia", poblacion: 4974986    },
+
+  // ── ÁFRICA ───────────────────────────────────────────────
+  { id:101, nombre: "Nigeria",                         code: "ng", capital: "Abuya",         region: "africa", poblacion: 206139589 },
+  { id:102, nombre: "Etiopía",                         code: "et", capital: "Adís Abeba",    region: "africa", poblacion: 114963588 },
+  { id:103, nombre: "Egipto",                          code: "eg", capital: "El Cairo",      region: "africa", poblacion: 102334404 },
+  { id:104, nombre: "Rep. Dem. del Congo",             code: "cd", capital: "Kinshasa",      region: "africa", poblacion: 89561403  },
+  { id:105, nombre: "Tanzania",                        code: "tz", capital: "Dodoma",         region: "africa", poblacion: 59734218  },
+  { id:106, nombre: "Kenia",                           code: "ke", capital: "Nairobi",        region: "africa", poblacion: 53771296  },
+  { id:107, nombre: "Sudáfrica",                       code: "za", capital: "Pretoria",       region: "africa", poblacion: 59308690  },
+  { id:108, nombre: "Argelia",                         code: "dz", capital: "Argel",          region: "africa", poblacion: 43851044  },
+  { id:109, nombre: "Marruecos",                       code: "ma", capital: "Rabat",          region: "africa", poblacion: 36910560  },
+  { id:110, nombre: "Mozambique",                      code: "mz", capital: "Maputo",          region: "africa", poblacion: 31255435  },
+  { id:111, nombre: "Ghana",                           code: "gh", capital: "Acra",           region: "africa", poblacion: 31072940  },
+  { id:112, nombre: "Costa de Marfil",                 code: "ci", capital: "Yamusukro",      region: "africa", poblacion: 26378274  },
+  { id:113, nombre: "Camerún",                         code: "cm", capital: "Yaundé",         region: "africa", poblacion: 26545863  },
+  { id:114, nombre: "Senegal",                         code: "sn", capital: "Dakar",          region: "africa", poblacion: 16743927  },
+  { id:115, nombre: "Zimbabue",                        code: "zw", capital: "Harare",         region: "africa", poblacion: 14862924  },
+  { id:116, nombre: "Túnez",                           code: "tn", capital: "Túnez",          region: "africa", poblacion: 11818619  },
+  { id:117, nombre: "Libia",                           code: "ly", capital: "Trípoli",        region: "africa", poblacion: 6871292   },
+  { id:118, nombre: "Somalia",                         code: "so", capital: "Mogadiscio",     region: "africa", poblacion: 15893222  },
+  { id:119, nombre: "Sudán",                           code: "sd", capital: "Jartum",         region: "africa", poblacion: 43849260  },
+  { id:120, nombre: "Uganda",                          code: "ug", capital: "Kampala",        region: "africa", poblacion: 45741007  },
+  { id:121, nombre: "Angola",                          code: "ao", capital: "Luanda",         region: "africa", poblacion: 32866272  },
+  { id:122, nombre: "Zambia",                          code: "zm", capital: "Lusaka",         region: "africa", poblacion: 18383955  },
+  { id:123, nombre: "Ruanda",                          code: "rw", capital: "Kigali",         region: "africa", poblacion: 12952218  },
+  { id:124, nombre: "Madagascar",                      code: "mg", capital: "Antananarivo",   region: "africa", poblacion: 27691018  },
+  { id:125, nombre: "Botsuana",                        code: "bw", capital: "Gaborone",       region: "africa", poblacion: 2351627   },
+  { id:126, nombre: "Namibia",                         code: "na", capital: "Windhoek",       region: "africa", poblacion: 2540905   },
+  { id:127, nombre: "Mauritania",                      code: "mr", capital: "Nuakchot",       region: "africa", poblacion: 4649658   },
+  { id:128, nombre: "Gabón",                           code: "ga", capital: "Libreville",     region: "africa", poblacion: 2225734   },
+
+  // ── OCEANÍA ──────────────────────────────────────────────
+  { id:129, nombre: "Australia",          code: "au", capital: "Canberra",       region: "oceania", poblacion: 25499884 },
+  { id:130, nombre: "Nueva Zelanda",      code: "nz", capital: "Wellington",     region: "oceania", poblacion: 4822233  },
+  { id:131, nombre: "Papúa Nueva Guinea", code: "pg", capital: "Port Moresby",   region: "oceania", poblacion: 8947024  },
+  { id:132, nombre: "Fiyi",               code: "fj", capital: "Suva",           region: "oceania", poblacion: 896445   },
+  { id:133, nombre: "Vanuatu",            code: "vu", capital: "Port Vila",      region: "oceania", poblacion: 307145   },
+  { id:134, nombre: "Samoa",              code: "ws", capital: "Apia",           region: "oceania", poblacion: 198414   },
+];
+
+// ── REGIONES ─────────────────────────────────────────────────
+const REGIONES = {
+  'mundo':        { label: 'Todo el mundo',      emoji: '🌍' },
+  'america_norte':{ label: 'América del Norte',  emoji: '🌎' },
+  'america_sur':  { label: 'América del Sur',    emoji: '🌎' },
+  'europa':       { label: 'Europa',             emoji: '🌍' },
+  'asia':         { label: 'Asia',               emoji: '🌏' },
+  'africa':       { label: 'África',             emoji: '🌍' },
+  'oceania':      { label: 'Oceanía',            emoji: '🌏' },
+};
+
+// ── MODOS ────────────────────────────────────────────────────
+const MODOS = {
+  'banderas':   { label: 'Banderas',   emoji: '🏳️', descripcion: 'Identifica el país por su bandera' },
+  'capitales':  { label: 'Capitales',  emoji: '🏙️', descripcion: 'Encuentra la capital del país' },
+  'poblacion':  { label: 'Población',  emoji: '👥', descripcion: '¿Qué país tiene más habitantes?' },
+  'banderas_inverso': { label: 'Banderas Inverso', emoji: '🔄🏳️', descripcion: 'Identifica la bandera por el nombre del país' },
+};
+
+// ── HELPERS ──────────────────────────────────────────────────
+
+/** Devuelve los países filtrados por región. */
+function getPaisesPorRegion(region) {
+  if (region === 'mundo') return [...PAISES];
+  return PAISES.filter(p => p.region === region);
+}
+
+/** Devuelve n elementos aleatorios del array (sin repetición). */
+function muestraAleatoria(arr, n) {
+  const copia = [...arr];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia.slice(0, n);
+}
+
+/** Mezcla un array in-place (Fisher-Yates). */
+function mezclar(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/** Formatea una cifra de población de forma legible. */
+function formatPoblacion(n) {
+  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + 'B';
+  if (n >= 1_000_000)     return (n / 1_000_000).toFixed(1) + 'M';
+  if (n >= 1_000)         return (n / 1_000).toFixed(0) + 'K';
+  return n.toString();
+}
+
+// ── CURIOSIDADES ─────────────────────────────────────────────
+const CURIOSIDADES = [
+  "Rusia es tan grande que abarca 11 zonas horarias distintas.",
+  "Canadá tiene más lagos que el resto del mundo combinado.",
+  "La Ciudad del Vaticano es el país más pequeño del mundo, cabría 8 veces en el Central Park de Nueva York.",
+  "Australia es más ancha que la luna.",
+  "En Filipinas hay más de 7.600 islas.",
+  "Indonesia tiene la mayor población musulmana del mundo.",
+  "El Monte Everest crece unos 4 milímetros cada año.",
+  "Francia es el país que abarca más zonas horarias en el mundo (12), gracias a sus territorios de ultramar.",
+  "Japón sufre alrededor de 1.500 terremotos al año.",
+  "Hay un pueblo en Noruega llamado 'Å'. Es el nombre de lugar más corto del mundo.",
+  "Islandia no tiene ejército ni fuerza aérea, y la policía no suele portar armas.",
+  "Papúa Nueva Guinea es el país con mayor diversidad lingüística del mundo, con más de 820 lenguas vivas.",
+  "Groenlandia es la isla más grande del mundo, pero no es un continente.",
+  "La frontera terrestre más larga de Francia es con... ¡Brasil! (debido a la Guayana Francesa).",
+  "El 90% de la población mundial vive en el hemisferio norte."
+];
