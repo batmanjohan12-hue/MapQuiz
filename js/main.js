@@ -149,50 +149,51 @@ function actualizarQuickStats() {
   $('qs-racha').textContent     = stats.rachaMaxima;
 }
 
-function inicializarMenu() {
+/** Solo refresca el estado visual del menú. Sin tocar listeners. */
+function refrescarMenu() {
   actualizarQuickStats();
+  document.querySelectorAll('.region-pill').forEach(p => {
+    p.classList.toggle('selected', p.dataset.region === regionSeleccionada);
+  });
+  // Cerrar submenús de modo al volver al menú
+  document.querySelectorAll('.modo-card').forEach(c => {
+    c.classList.remove('selected');
+    c.querySelectorAll('.formato-pill').forEach(p => p.classList.remove('active'));
+  });
+}
 
-  // ── Selección de Modo (abre submenú de formatos) ───────────
+/** Registra listeners del menú. Se llama UNA SOLA VEZ al arrancar la app. */
+function inicializarMenuListeners() {
   document.querySelectorAll('.modo-card').forEach(card => {
-    // Clic en la fila principal de la card (no en los pills de formato)
     const mainRow = card.querySelector('.modo-card-main');
     mainRow.addEventListener('click', () => {
       const yaSeleccionada = card.classList.contains('selected');
-      // Cerrar todas
       document.querySelectorAll('.modo-card').forEach(c => c.classList.remove('selected'));
-      // Si no estaba abierta, abrirla
       if (!yaSeleccionada) {
         card.classList.add('selected');
         modoSeleccionado = card.dataset.modo;
       }
     });
 
-    // Clic en un pill de formato → lanzar juego inmediatamente
     card.querySelectorAll('.formato-pill').forEach(pill => {
       pill.addEventListener('click', (e) => {
-        e.stopPropagation(); // no propagar al modo-card-main
+        e.stopPropagation();
         formatoSeleccionado = pill.dataset.formato;
 
-        // Verificar que haya suficientes países en la región
         const paises = getPaisesPorRegion(regionSeleccionada);
         if (paises.length < 4) {
           mostrarToast('No hay suficientes países en esta región', 'wrong', 2500);
           return;
         }
 
-        // Highlight del pill brevemente antes de arrancar
         card.querySelectorAll('.formato-pill').forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
 
-        // Pequeño delay visual para que el jugador vea el pill activo
-        setTimeout(() => {
-          iniciarJuego(modoSeleccionado, regionSeleccionada);
-        }, 180);
+        setTimeout(() => iniciarJuego(modoSeleccionado, regionSeleccionada), 180);
       });
     });
   });
 
-  // ── Selección de Región ────────────────────────────────────
   document.querySelectorAll('.region-pill').forEach(pill => {
     pill.addEventListener('click', () => {
       const region = pill.dataset.region;
@@ -206,6 +207,11 @@ function inicializarMenu() {
       regionSeleccionada = region;
     });
   });
+}
+
+/** Alias para compatibilidad: refresca UI sin duplicar listeners. */
+function inicializarMenu() {
+  refrescarMenu();
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -888,7 +894,8 @@ document.addEventListener('DOMContentLoaded', () => {
     $('btn-theme').textContent = newTheme === 'light' ? '🌙' : '☀️';
   });
 
-  inicializarMenu();
+  inicializarMenuListeners(); // registra listeners UNA SOLA VEZ
+  refrescarMenu();            // pone la UI en estado inicial
   inicializarPanelesLaterales();
   mostrarScreen('menu');
 });
