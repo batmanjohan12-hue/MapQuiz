@@ -17,8 +17,14 @@ const screens = {
   menu:    $('screen-menu'),
   game:    $('screen-game'),
   results: $('screen-results'),
+  wordle:  $('screen-wordle'),
   atlas:   $('screen-atlas'),
 };
+
+function abrirMenu() {
+  refrescarMenu();
+  mostrarScreen('menu');
+}
 
 // ── SONIDOS (Archivos Reales) ─────────────────────────────────
 let soundMuted = localStorage.getItem('mq_muted') === 'true';
@@ -895,7 +901,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   inicializarMenuListeners(); // registra listeners UNA SOLA VEZ
+  inicializarWordleListeners(); // listeners del wordle (una sola vez)
   refrescarMenu();            // pone la UI en estado inicial
   inicializarPanelesLaterales();
   mostrarScreen('menu');
+
+  // Botón GeoWordle en el menú
+  $('btn-wordle-menu').addEventListener('click', abrirWordle);
 });

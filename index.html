@@ -167,6 +167,9 @@
 
       <!-- Footer de acciones -->
       <footer class="menu-footer">
+        <button id="btn-wordle-menu" class="btn btn-primary btn-lg wordle-menu-btn" aria-label="Jugar GeoWordle del día">
+          🌍 GeoWordle del Día
+        </button>
         <div class="menu-links">
           <button id="btn-atlas-menu" class="btn btn-ghost btn-sm">📖 Atlas de Geografía</button>
           <button id="btn-ranking-menu" class="btn btn-ghost btn-sm">🏆 Clasificación</button>
@@ -362,7 +365,111 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════
-     PANTALLA 4 — ATLAS DE GEOGRAFÍA
+     PANTALLA 4 — WORDLE DE PAÍSES
+════════════════════════════════════════════════════════ -->
+<section id="screen-wordle" class="screen" role="main" aria-label="Wordle de países">
+
+  <header class="wordle-header">
+    <button id="btn-salir-wordle" class="btn btn-ghost btn-sm">🏠 Volver</button>
+    <div class="wordle-title-wrap">
+      <h1 class="wordle-title">🌍 GeoWordle</h1>
+      <p class="wordle-subtitle">Adivina el país del día</p>
+    </div>
+    <button id="btn-wordle-stats" class="btn btn-ghost btn-sm">📊 Stats</button>
+  </header>
+
+  <!-- Info de intentos -->
+  <div class="wordle-intentos-wrap">
+    <span id="wordle-intentos-label" class="wordle-intentos-label">4 intentos restantes</span>
+    <div id="wordle-dots" class="wordle-dots">
+      <span class="wordle-dot"></span>
+      <span class="wordle-dot"></span>
+      <span class="wordle-dot"></span>
+      <span class="wordle-dot"></span>
+    </div>
+  </div>
+
+  <!-- Zona de pistas (se revelan progresivamente) -->
+  <div class="wordle-pistas-grid" id="wordle-pistas">
+    <!-- Pista 0: Continente — siempre visible desde el inicio -->
+    <div class="pista-card visible" id="pista-continente">
+      <div class="pista-icon">🌍</div>
+      <div class="pista-label">Continente</div>
+      <div class="pista-valor" id="pista-val-continente">?</div>
+    </div>
+    <!-- Pista 1: Población — se revela tras 1er fallo -->
+    <div class="pista-card" id="pista-poblacion">
+      <div class="pista-icon">👥</div>
+      <div class="pista-label">Población</div>
+      <div class="pista-valor" id="pista-val-poblacion">?</div>
+    </div>
+    <!-- Pista 2: Capital — se revela tras 2do fallo -->
+    <div class="pista-card" id="pista-capital">
+      <div class="pista-icon">🏙️</div>
+      <div class="pista-label">Capital</div>
+      <div class="pista-valor" id="pista-val-capital">?</div>
+    </div>
+    <!-- Pista 3: Vecinos — se revela tras 3er fallo -->
+    <div class="pista-card" id="pista-vecinos">
+      <div class="pista-icon">🗺️</div>
+      <div class="pista-label">Países vecinos</div>
+      <div class="pista-valor" id="pista-val-vecinos">?</div>
+    </div>
+  </div>
+
+  <!-- Input de búsqueda con autocompletado -->
+  <div class="wordle-input-section" id="wordle-input-section">
+    <div class="wordle-search-wrap">
+      <input
+        type="text"
+        id="wordle-input"
+        class="wordle-input"
+        placeholder="Escribe un país..."
+        autocomplete="off"
+        aria-label="Nombre del país"
+        aria-autocomplete="list"
+      />
+      <button id="btn-wordle-adivinar" class="btn btn-primary">Adivinar →</button>
+    </div>
+    <ul id="wordle-autocomplete" class="wordle-autocomplete" role="listbox" aria-label="Sugerencias"></ul>
+  </div>
+
+  <!-- Historial de intentos fallidos -->
+  <div class="wordle-historial" id="wordle-historial"></div>
+
+  <!-- Panel de resultado (ganó / perdió) -->
+  <div class="wordle-resultado" id="wordle-resultado" style="display:none">
+    <div class="wordle-resultado-emoji" id="wordle-res-emoji">🎉</div>
+    <div class="wordle-resultado-titulo" id="wordle-res-titulo"></div>
+    <div class="wordle-resultado-sub" id="wordle-res-sub"></div>
+    <!-- Bandera revelada -->
+    <img id="wordle-res-bandera" class="wordle-res-bandera" src="" alt="Bandera del país" />
+    <!-- Stats de racha -->
+    <div class="wordle-racha-stats glass" id="wordle-racha-stats">
+      <div class="wordle-racha-item">
+        <div class="wordle-racha-val" id="wstat-jugados">0</div>
+        <div class="wordle-racha-lbl">Jugados</div>
+      </div>
+      <div class="wordle-racha-item">
+        <div class="wordle-racha-val" id="wstat-ganados">0%</div>
+        <div class="wordle-racha-lbl">Ganados</div>
+      </div>
+      <div class="wordle-racha-item">
+        <div class="wordle-racha-val" id="wstat-racha">0</div>
+        <div class="wordle-racha-lbl">Racha actual</div>
+      </div>
+      <div class="wordle-racha-item">
+        <div class="wordle-racha-val" id="wstat-max">0</div>
+        <div class="wordle-racha-lbl">Racha máxima</div>
+      </div>
+    </div>
+    <p class="wordle-proximo">🕐 Próximo país en: <strong id="wordle-countdown">--:--:--</strong></p>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     PANTALLA 5 — ATLAS DE GEOGRAFÍA
 ════════════════════════════════════════════════════════ -->
 <section id="screen-atlas" class="screen" role="main" aria-label="Atlas de Geografía">
 
@@ -408,6 +515,7 @@
 <script src="js/data.js"></script>
 <script src="js/storage.js"></script>
 <script src="js/game.js"></script>
+<script src="js/wordle.js"></script>
 <script src="js/main.js"></script>
 
 </body>
