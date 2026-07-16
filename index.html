@@ -84,54 +84,68 @@
         <h2 id="lbl-modo">Elige un modo de juego</h2>
         <div class="modo-grid" role="radiogroup" aria-labelledby="lbl-modo">
 
-          <div class="modo-card" data-modo="banderas" role="radio" aria-checked="true" tabindex="0" id="modo-banderas">
-            <div class="modo-emoji">🏳️</div>
-            <div class="modo-nombre">Banderas</div>
-            <div class="modo-desc">Identifica el país por su bandera</div>
+          <div class="modo-card" data-modo="banderas" role="radio" aria-checked="false" tabindex="0" id="modo-banderas">
+            <div class="modo-card-main">
+              <div class="modo-emoji">🏳️</div>
+              <div>
+                <div class="modo-nombre">Banderas</div>
+                <div class="modo-desc">Identifica el país por su bandera</div>
+              </div>
+              <span class="modo-arrow">▶</span>
+            </div>
+            <div class="formato-inline" aria-label="Elige un formato">
+              <button class="formato-pill" data-formato="clasico">⏱️ Clásico</button>
+              <button class="formato-pill" data-formato="supervivencia">❤️ Supervivencia</button>
+              <button class="formato-pill" data-formato="contrareloj">⚡ Contra Reloj</button>
+            </div>
           </div>
 
           <div class="modo-card" data-modo="capitales" role="radio" aria-checked="false" tabindex="0" id="modo-capitales">
-            <div class="modo-emoji">🏙️</div>
-            <div class="modo-nombre">Capitales</div>
-            <div class="modo-desc">Encuentra la capital del país</div>
+            <div class="modo-card-main">
+              <div class="modo-emoji">🏙️</div>
+              <div>
+                <div class="modo-nombre">Capitales</div>
+                <div class="modo-desc">Encuentra la capital del país</div>
+              </div>
+              <span class="modo-arrow">▶</span>
+            </div>
+            <div class="formato-inline" aria-label="Elige un formato">
+              <button class="formato-pill" data-formato="clasico">⏱️ Clásico</button>
+              <button class="formato-pill" data-formato="supervivencia">❤️ Supervivencia</button>
+              <button class="formato-pill" data-formato="contrareloj">⚡ Contra Reloj</button>
+            </div>
           </div>
 
           <div class="modo-card" data-modo="poblacion" role="radio" aria-checked="false" tabindex="0" id="modo-poblacion">
-            <div class="modo-emoji">👥</div>
-            <div class="modo-nombre">Población</div>
-            <div class="modo-desc">¿Qué país tiene más habitantes?</div>
+            <div class="modo-card-main">
+              <div class="modo-emoji">👥</div>
+              <div>
+                <div class="modo-nombre">Población</div>
+                <div class="modo-desc">¿Qué país tiene más habitantes?</div>
+              </div>
+              <span class="modo-arrow">▶</span>
+            </div>
+            <div class="formato-inline" aria-label="Elige un formato">
+              <button class="formato-pill" data-formato="clasico">⏱️ Clásico</button>
+              <button class="formato-pill" data-formato="supervivencia">❤️ Supervivencia</button>
+              <button class="formato-pill" data-formato="contrareloj">⚡ Contra Reloj</button>
+            </div>
           </div>
 
           <div class="modo-card" data-modo="banderas_inverso" role="radio" aria-checked="false" tabindex="0" id="modo-banderas-inverso">
-            <div class="modo-emoji">🔄🏳️</div>
-            <div class="modo-nombre">Banderas Inverso</div>
-            <div class="modo-desc">Identifica la bandera por el nombre del país</div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- Selección de formato de juego -->
-      <section class="menu-section" aria-labelledby="lbl-formato">
-        <h2 id="lbl-formato">Elige un formato de juego</h2>
-        <div class="formato-grid" role="radiogroup" aria-labelledby="lbl-formato">
-
-          <div class="formato-card selected" data-formato="clasico" role="radio" aria-checked="true" tabindex="0" id="formato-clasico">
-            <div class="formato-emoji">⏱️</div>
-            <div class="formato-nombre">Clásico</div>
-            <div class="formato-desc">10 preguntas con 15s cada una. 3 vidas.</div>
-          </div>
-
-          <div class="formato-card" data-formato="supervivencia" role="radio" aria-checked="false" tabindex="0" id="formato-supervivencia">
-            <div class="formato-emoji">❤️</div>
-            <div class="formato-nombre">Supervivencia</div>
-            <div class="formato-desc">Preguntas ilimitadas. Gana vidas y evita fallar.</div>
-          </div>
-
-          <div class="formato-card" data-formato="contrareloj" role="radio" aria-checked="false" tabindex="0" id="formato-contrareloj">
-            <div class="formato-emoji">⚡</div>
-            <div class="formato-nombre">Contra Reloj</div>
-            <div class="formato-desc">60 segundos globales. Acierto (+2s), fallo (-5s).</div>
+            <div class="modo-card-main">
+              <div class="modo-emoji">🔄🏳️</div>
+              <div>
+                <div class="modo-nombre">Banderas Inverso</div>
+                <div class="modo-desc">Identifica la bandera por el nombre del país</div>
+              </div>
+              <span class="modo-arrow">▶</span>
+            </div>
+            <div class="formato-inline" aria-label="Elige un formato">
+              <button class="formato-pill" data-formato="clasico">⏱️ Clásico</button>
+              <button class="formato-pill" data-formato="supervivencia">❤️ Supervivencia</button>
+              <button class="formato-pill" data-formato="contrareloj">⚡ Contra Reloj</button>
+            </div>
           </div>
 
         </div>
@@ -153,9 +167,6 @@
 
       <!-- Footer de acciones -->
       <footer class="menu-footer">
-        <button id="btn-jugar" class="btn btn-primary btn-lg" aria-label="Iniciar partida">
-          ¡Jugar ahora! 🚀
-        </button>
         <div class="menu-links">
           <button id="btn-atlas-menu" class="btn btn-ghost btn-sm">📖 Atlas de Geografía</button>
           <button id="btn-ranking-menu" class="btn btn-ghost btn-sm">🏆 Clasificación</button>

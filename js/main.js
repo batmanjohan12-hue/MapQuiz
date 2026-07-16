@@ -152,28 +152,49 @@ function actualizarQuickStats() {
 function inicializarMenu() {
   actualizarQuickStats();
 
-  // ── Selección de Modo ──────────────────────────────────────
+  // ── Selección de Modo (abre submenú de formatos) ───────────
   document.querySelectorAll('.modo-card').forEach(card => {
-    card.addEventListener('click', () => {
+    // Clic en la fila principal de la card (no en los pills de formato)
+    const mainRow = card.querySelector('.modo-card-main');
+    mainRow.addEventListener('click', () => {
+      const yaSeleccionada = card.classList.contains('selected');
+      // Cerrar todas
       document.querySelectorAll('.modo-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      modoSeleccionado = card.dataset.modo;
+      // Si no estaba abierta, abrirla
+      if (!yaSeleccionada) {
+        card.classList.add('selected');
+        modoSeleccionado = card.dataset.modo;
+      }
     });
-  });
 
-  // ── Selección de Formato ───────────────────────────────────
-  document.querySelectorAll('.formato-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.formato-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      formatoSeleccionado = card.dataset.formato;
+    // Clic en un pill de formato → lanzar juego inmediatamente
+    card.querySelectorAll('.formato-pill').forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        e.stopPropagation(); // no propagar al modo-card-main
+        formatoSeleccionado = pill.dataset.formato;
+
+        // Verificar que haya suficientes países en la región
+        const paises = getPaisesPorRegion(regionSeleccionada);
+        if (paises.length < 4) {
+          mostrarToast('No hay suficientes países en esta región', 'wrong', 2500);
+          return;
+        }
+
+        // Highlight del pill brevemente antes de arrancar
+        card.querySelectorAll('.formato-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+
+        // Pequeño delay visual para que el jugador vea el pill activo
+        setTimeout(() => {
+          iniciarJuego(modoSeleccionado, regionSeleccionada);
+        }, 180);
+      });
     });
   });
 
   // ── Selección de Región ────────────────────────────────────
   document.querySelectorAll('.region-pill').forEach(pill => {
     pill.addEventListener('click', () => {
-      // Verificar que hay suficientes países
       const region = pill.dataset.region;
       const count  = getPaisesPorRegion(region).length;
       if (count < 4) {
@@ -184,16 +205,6 @@ function inicializarMenu() {
       pill.classList.add('selected');
       regionSeleccionada = region;
     });
-  });
-
-  // ── Botón Jugar ────────────────────────────────────────────
-  $('btn-jugar').addEventListener('click', () => {
-    const paises = getPaisesPorRegion(regionSeleccionada);
-    if (paises.length < 4) {
-      mostrarToast('No hay suficientes países en esta región', 'wrong', 2500);
-      return;
-    }
-    iniciarJuego(modoSeleccionado, regionSeleccionada);
   });
 }
 
@@ -628,7 +639,7 @@ function animarNumero(el, desde, hasta, duracion) {
 }
 
 // ── Guardar puntaje ────────────────────────────────────────
-$('btn-guardar').addEventListener('click', () => {
+$('btn-guardar').addEventListener('click', async () => {
   const nombre = $('input-nombre').value.trim();
   if (!nombre) {
     $('input-nombre').focus();
@@ -640,11 +651,20 @@ $('btn-guardar').addEventListener('click', () => {
 
   nombreJugador = nombre;
   const r = juegoActual.obtenerResumen();
-  guardarPuntaje({ nombre, ...r });
+
+  // Feedback inmediato en la UI
+  $('btn-guardar').disabled = true;
+  $('btn-guardar').textContent = CLOUD_ENABLED ? 'Guardando... ⏳' : 'Guardado ✅';
+
+  const pos = await guardarPuntaje({ nombre, ...r });
   puntajeGuardado = true;
 
-  $('btn-guardar').disabled = true;
   $('msg-guardado').style.display = 'block';
+  if (pos && pos <= 10) {
+    $('msg-guardado').innerHTML = `✅ ¡Puntaje guardado! Estás en el <strong>#${pos}</strong> del ranking global 🏆`;
+  } else {
+    $('msg-guardado').innerHTML = `✅ ¡Puntaje guardado con éxito!`;
+  }
 });
 
 // ── Botones de resultados ──────────────────────────────────
@@ -665,23 +685,37 @@ $('btn-cambiar-modo').addEventListener('click', () => {
 let rankingModoActual = 'todos';
 
 function abrirRanking() {
-  renderizarRanking(rankingModoActual);
   $('ranking-modal').classList.add('open');
+  renderizarRankingAsync(rankingModoActual);
 }
 
 function cerrarRanking() {
   $('ranking-modal').classList.remove('open');
 }
 
-function renderizarRanking(modo) {
+/** Renderiza el ranking (muestra spinner mientras carga de la nube). */
+async function renderizarRankingAsync(modo) {
   rankingModoActual = modo;
+
   // Actualizar tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tab === modo);
   });
 
-  const datos = obtenerRankingPorModo(modo);
   const tbody = $('ranking-tbody');
+
+  // Mostrar spinner de carga
+  tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">⏳ Cargando clasificación...</td></tr>`;
+
+  // Obtener datos (nube si disponible, sino local)
+  let datos;
+  try {
+    const ranking = await obtenerRankingAsync();
+    datos = ranking.filter(e => e.modo === modo || modo === 'todos');
+  } catch(e) {
+    datos = obtenerRankingPorModo(modo);
+  }
+
   tbody.innerHTML = '';
 
   if (!datos.length) {
@@ -689,7 +723,7 @@ function renderizarRanking(modo) {
     return;
   }
 
-  datos.forEach((entry, i) => {
+  datos.slice(0, 10).forEach((entry, i) => {
     const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
     const modoInfo = MODOS[entry.modo] || { emoji: '?', label: entry.modo };
     const tr = document.createElement('tr');
@@ -702,6 +736,11 @@ function renderizarRanking(modo) {
     `;
     tbody.appendChild(tr);
   });
+}
+
+// Alias síncrono para compatibilidad interna
+function renderizarRanking(modo) {
+  renderizarRankingAsync(modo);
 }
 
 // Listeners ranking
@@ -806,10 +845,8 @@ function renderizarAtlas() {
 //  INICIALIZACIÓN Y BINDINGS DE EVENTOS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 document.addEventListener('DOMContentLoaded', () => {
-  // Seleccionar modo, región y formato por defecto
-  document.querySelector('[data-modo="banderas"]')?.classList.add('selected');
+  // Seleccionar región por defecto
   document.querySelector('[data-region="mundo"]')?.classList.add('selected');
-  document.querySelector('[data-formato="clasico"]')?.classList.add('selected');
 
   // Inicializar UI de sonido
   actualizarMuteUI();
