@@ -3,21 +3,21 @@
 // ============================================================
 
 const STORAGE_KEYS = {
-  RANKING_LOCAL: "mq_ranking_local",
-  RANKING_CLOUD: "mq_ranking_cloud_cache",
-  RANKING_CLOUD_TS: "mq_ranking_cloud_ts",
-  STATS: "mq_stats",
+  RANKING_LOCAL: 'mq_ranking_local',
+  RANKING_CLOUD: 'mq_ranking_cloud_cache',
+  RANKING_CLOUD_TS: 'mq_ranking_cloud_ts',
+  STATS:   'mq_stats',
 };
 
 // ── CONFIGURACIÓN DEL RANKING COMPARTIDO ─────────────────────
 // Usamos JSONBin.io como backend gratuito para ranking compartido.
 // Crea una cuenta gratuita en https://jsonbin.io y reemplaza estos valores:
 const CLOUD_CONFIG = {
-  BIN_ID: "6a583da8f5f4af5e29957e76", // <-- reemplaza con tu Bin ID de jsonbin.io
-  API_KEY: "$2a$10$s3VSeizWonolyP.4JvAIl.0X0vqX6g4TA64ILwl.xP4t1oAl.Cne2", // <-- reemplaza con tu API key de jsonbin.io
-  CACHE_TTL: 30 * 1000, // Caché local de 30 segundos
+  BIN_ID:  '6a593334da38895dfe67bacb',   // <-- reemplaza con tu Bin ID de jsonbin.io
+  API_KEY: '$2a$10$s3VSeizWonolyP.4JvAIl.0X0vqX6g4TA64ILwl.xP4t1oAl.Cne2',  // <-- reemplaza con tu API key de jsonbin.io
+  CACHE_TTL: 30 * 1000,        // Caché local de 30 segundos
 };
-const CLOUD_ENABLED = CLOUD_CONFIG.BIN_ID !== "6a583da8f5f4af5e29957e76";
+const CLOUD_ENABLED = CLOUD_CONFIG.BIN_ID !== 'TU_BIN_ID_AQUI';
 
 // ── RANKING EN LA NUBE ────────────────────────────────────────
 
@@ -28,21 +28,18 @@ const CLOUD_ENABLED = CLOUD_CONFIG.BIN_ID !== "6a583da8f5f4af5e29957e76";
 async function subirRankingNube(ranking) {
   if (!CLOUD_ENABLED) return false;
   try {
-    const res = await fetch(
-      `https://api.jsonbin.io/v3/b/${CLOUD_CONFIG.BIN_ID}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Master-Key": CLOUD_CONFIG.API_KEY,
-          "X-Bin-Versioning": "false",
-        },
-        body: JSON.stringify({ ranking }),
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${CLOUD_CONFIG.BIN_ID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': CLOUD_CONFIG.API_KEY,
+        'X-Bin-Versioning': 'false',
       },
-    );
+      body: JSON.stringify({ ranking }),
+    });
     return res.ok;
   } catch (e) {
-    console.warn("[MapQuiz] No se pudo subir ranking a la nube:", e);
+    console.warn('[MapQuiz] No se pudo subir ranking a la nube:', e);
     return false;
   }
 }
@@ -55,9 +52,7 @@ async function descargarRankingNube() {
   if (!CLOUD_ENABLED) return null;
 
   // Verificar caché
-  const ts = parseInt(
-    localStorage.getItem(STORAGE_KEYS.RANKING_CLOUD_TS) || "0",
-  );
+  const ts  = parseInt(localStorage.getItem(STORAGE_KEYS.RANKING_CLOUD_TS) || '0');
   const now = Date.now();
   if (now - ts < CLOUD_CONFIG.CACHE_TTL) {
     const cached = localStorage.getItem(STORAGE_KEYS.RANKING_CLOUD);
@@ -65,12 +60,9 @@ async function descargarRankingNube() {
   }
 
   try {
-    const res = await fetch(
-      `https://api.jsonbin.io/v3/b/${CLOUD_CONFIG.BIN_ID}/latest`,
-      {
-        headers: { "X-Master-Key": CLOUD_CONFIG.API_KEY },
-      },
-    );
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${CLOUD_CONFIG.BIN_ID}/latest`, {
+      headers: { 'X-Master-Key': CLOUD_CONFIG.API_KEY },
+    });
     if (!res.ok) return null;
     const data = await res.json();
     const ranking = data.record?.ranking || [];
@@ -79,7 +71,7 @@ async function descargarRankingNube() {
     localStorage.setItem(STORAGE_KEYS.RANKING_CLOUD_TS, String(now));
     return ranking;
   } catch (e) {
-    console.warn("[MapQuiz] No se pudo descargar ranking de la nube:", e);
+    console.warn('[MapQuiz] No se pudo descargar ranking de la nube:', e);
     return null;
   }
 }
@@ -101,22 +93,10 @@ function guardarRankingLocal(ranking) {
  * Guarda una entrada en el ranking (local + nube si está configurada).
  * Devuelve la posición obtenida.
  */
-async function guardarPuntaje({
-  nombre,
-  puntaje,
-  modo,
-  region,
-  aciertos,
-  total,
-}) {
+async function guardarPuntaje({ nombre, puntaje, modo, region, aciertos, total }) {
   const nuevaEntrada = {
-    nombre,
-    puntaje,
-    modo,
-    region,
-    aciertos,
-    total,
-    fecha: new Date().toLocaleDateString("es-ES"),
+    nombre, puntaje, modo, region, aciertos, total,
+    fecha: new Date().toLocaleDateString('es-ES'),
   };
 
   // Obtener ranking base (nube si disponible, sino local)
@@ -144,8 +124,9 @@ async function guardarPuntaje({
   }
 
   // Calcular posición
-  const pos =
-    top20.findIndex((e) => e.nombre === nombre && e.puntaje === puntaje) + 1;
+  const pos = top20.findIndex(e =>
+    e.nombre === nombre && e.puntaje === puntaje
+  ) + 1;
   return pos;
 }
 
@@ -175,13 +156,13 @@ function obtenerRanking() {
 
 /** Obtiene el ranking filtrado por modo. */
 function obtenerRankingPorModo(modo) {
-  return obtenerRanking().filter((e) => e.modo === modo || modo === "todos");
+  return obtenerRanking().filter(e => e.modo === modo || modo === 'todos');
 }
 
 /** Obtiene el ranking filtrado por modo (versión asíncrona). */
 async function obtenerRankingPorModoAsync(modo) {
   const ranking = await obtenerRankingAsync();
-  return ranking.filter((e) => e.modo === modo || modo === "todos");
+  return ranking.filter(e => e.modo === modo || modo === 'todos');
 }
 
 // ── ESTADÍSTICAS ─────────────────────────────────────────────
@@ -190,13 +171,13 @@ async function obtenerRankingPorModoAsync(modo) {
 function obtenerEstadisticas() {
   const raw = localStorage.getItem(STORAGE_KEYS.STATS);
   const defaults = {
-    totalPartidas: 0,
-    totalAciertos: 0,
+    totalPartidas:  0,
+    totalAciertos:  0,
     totalPreguntas: 0,
-    rachaMaxima: 0,
-    mejorPuntaje: 0,
+    rachaMaxima:    0,
+    mejorPuntaje:   0,
     porModo: {
-      banderas: { aciertos: 0, preguntas: 0 },
+      banderas:  { aciertos: 0, preguntas: 0 },
       capitales: { aciertos: 0, preguntas: 0 },
       poblacion: { aciertos: 0, preguntas: 0 },
     },
@@ -208,13 +189,13 @@ function obtenerEstadisticas() {
 function actualizarEstadisticas({ modo, aciertos, total, racha, puntaje }) {
   const stats = obtenerEstadisticas();
   stats.totalPartidas++;
-  stats.totalAciertos += aciertos;
+  stats.totalAciertos  += aciertos;
   stats.totalPreguntas += total;
-  if (racha > stats.rachaMaxima) stats.rachaMaxima = racha;
+  if (racha   > stats.rachaMaxima)  stats.rachaMaxima  = racha;
   if (puntaje > stats.mejorPuntaje) stats.mejorPuntaje = puntaje;
 
   if (!stats.porModo[modo]) stats.porModo[modo] = { aciertos: 0, preguntas: 0 };
-  stats.porModo[modo].aciertos += aciertos;
+  stats.porModo[modo].aciertos  += aciertos;
   stats.porModo[modo].preguntas += total;
 
   localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
@@ -222,6 +203,8 @@ function actualizarEstadisticas({ modo, aciertos, total, racha, puntaje }) {
 
 /** Limpia todos los datos guardados. */
 function limpiarDatos() {
-  localStorage.removeItem(STORAGE_KEYS.RANKING);
+  localStorage.removeItem(STORAGE_KEYS.RANKING_LOCAL);
+  localStorage.removeItem(STORAGE_KEYS.RANKING_CLOUD);
+  localStorage.removeItem(STORAGE_KEYS.RANKING_CLOUD_TS);
   localStorage.removeItem(STORAGE_KEYS.STATS);
 }
