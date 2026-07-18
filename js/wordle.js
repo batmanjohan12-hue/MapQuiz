@@ -9,17 +9,19 @@ const WORDLE_STATS_KEY    = 'mq_wordle_stats';
 // Estado del wordle en esta sesión
 let wordleEstado = null;
 
-// ── UTILIDAD: clave del día (YYYY-MM-DD) ─────────────────────
+// ── UTILIDAD: clave del día en UTC (YYYY-MM-DD) ──────────────
 function diaKey() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const y = now.getUTCFullYear();
+  const m = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(now.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
-// ── PAÍS DEL DÍA (determinista por fecha) ────────────────────
+// ── PAÍS DEL DÍA (rota cada 24h exactas en UTC) ──────────────
 function getPaisDelDia() {
-  const inicio    = new Date('2025-01-01').getTime();
-  const hoy       = new Date(diaKey()).getTime();
-  const diasDesde = Math.floor((hoy - inicio) / 86400000);
-  // Solo países con nombre conocido (todos los de PAISES)
+  const inicio    = Date.UTC(2025, 0, 1); // 2025-01-01 00:00 UTC
+  const diasDesde = Math.floor((Date.now() - inicio) / 86400000);
   const pool = PAISES.filter(p => p.nombre);
   return pool[diasDesde % pool.length];
 }
@@ -344,10 +346,12 @@ function mostrarResultadoWordle(gano, stats) {
 function iniciarCountdown() {
   let intervalId;
   const actualizar = () => {
-    const ahora   = new Date();
-    const manana  = new Date(ahora);
-    manana.setHours(24, 0, 0, 0);
-    const diff    = manana - ahora;
+    const ahora   = Date.now();
+    // Próxima medianoche UTC (misma referencia que el cambio de país)
+    const msSinceEpoch = ahora;
+    const msEnDia = 86400000;
+    const mananaUTC = Math.ceil(msSinceEpoch / msEnDia) * msEnDia;
+    const diff    = mananaUTC - ahora;
     const hh      = String(Math.floor(diff / 3600000)).padStart(2, '0');
     const mm      = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
     const ss      = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
@@ -468,8 +472,24 @@ function inicializarWordleListeners() {
   btnStats.addEventListener('click', mostrarWordleStats);
 }
 
+// ── RESET DE EMERGENCIA (si el estado guardado es de otro sistema) ──
+function resetearWordleSiNecesario() {
+  const raw = localStorage.getItem(WORDLE_STORAGE_KEY);
+  if (!raw) return;
+  try {
+    const estado = JSON.parse(raw);
+    // Si el dia guardado no coincide con hoy en UTC, borrar
+    if (estado.dia !== diaKey()) {
+      localStorage.removeItem(WORDLE_STORAGE_KEY);
+    }
+  } catch(e) {
+    localStorage.removeItem(WORDLE_STORAGE_KEY);
+  }
+}
+
 // ── ABRIR WORDLE (llamado desde main.js) ─────────────────────
 function abrirWordle() {
+  resetearWordleSiNecesario();
   mostrarScreen('wordle');
   inicializarWordle();
 }
