@@ -17,28 +17,31 @@ const CLOUD_CONFIG = {
   API_KEY: "$2a$10$s3VSeizWonolyP.4JvAIl.0X0vqX6g4TA64ILwl.xP4t1oAl.Cne2", // <-- reemplaza con tu API key de jsonbin.io
   CACHE_TTL: 30 * 1000, // Caché local de 30 segundos
 };
-const CLOUD_ENABLED = CLOUD_CONFIG.BIN_ID !== "6a593334da38895dfe67bacb";
+const CLOUD_ENABLED = CLOUD_CONFIG.BIN_ID !== "TU_BIN_ID_AQUI";
 
 // ── MIGRACIÓN: limpiar datos del sistema local anterior ───────
-// La clave vieja era 'mq_ranking'. Si existe, es data del sistema
-// local anterior al ranking compartido — se borra automáticamente.
+// Versión del sistema de ranking. Cambiar este número fuerza
+// un reset del caché local en todos los navegadores.
+const RANKING_VERSION = "2"; // v2 = sistema compartido en la nube
 (function limpiarDatosViejos() {
-  const CLAVE_VIEJA = "mq_ranking";
-  if (localStorage.getItem(CLAVE_VIEJA) !== null) {
-    localStorage.removeItem(CLAVE_VIEJA);
+  const versionKey = "mq_ranking_version";
+  const versionActual = localStorage.getItem(versionKey);
+
+  // Si la versión no coincide (o no existe), limpiar todo el ranking local
+  if (versionActual !== RANKING_VERSION) {
+    localStorage.removeItem("mq_ranking"); // clave vieja v1
     localStorage.removeItem(STORAGE_KEYS.RANKING_LOCAL);
     localStorage.removeItem(STORAGE_KEYS.RANKING_CLOUD);
     localStorage.removeItem(STORAGE_KEYS.RANKING_CLOUD_TS);
-    console.info(
-      "[MapQuiz] Ranking local antiguo limpiado — ahora se usa el ranking compartido en la nube.",
-    );
+    localStorage.setItem(versionKey, RANKING_VERSION);
+    console.info("[MapQuiz] Caché de ranking reiniciado a v" + RANKING_VERSION);
   }
 })();
 
-/**
- * Sube el ranking actualizado a JSONBin.io.
- * Devuelve true si tuvo éxito, false si falló.
- */
+// */ ── RANKING EN LA NUBE ────────────────────────────────────────
+// Sube el ranking actualizado a JSONBin.io.
+// Devuelve true si tuvo éxito, false si falló.
+//
 async function subirRankingNube(ranking) {
   if (!CLOUD_ENABLED) return false;
   try {
