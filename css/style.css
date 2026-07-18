@@ -389,9 +389,8 @@ body::after {
 }
 .formato-pill:hover {
   border-color: var(--primary);
-  background: rgba(99,110,255,.15);
+  background: rgba(99,110,255,.12);
   color: var(--primary);
-  transform: translateY(-2px);
 }
 .formato-pill.active {
   border-color: var(--primary);
