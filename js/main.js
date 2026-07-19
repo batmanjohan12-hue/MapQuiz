@@ -918,14 +918,6 @@ document.addEventListener('DOMContentLoaded', () => {
     atlas:   $('screen-atlas'),
   };
 
-  // Detener juego anterior al salir (bug timer persistente)
-  const _detenerJuegoActual = detenerJuegoActual;
-  function detenerJuegoActual() {
-    _detenerJuegoActual();
-    if (typeof idiomasJuego !== 'undefined' && idiomasJuego) idiomasJuego.detenerTimer();
-    if (typeof detenerAudio === 'function') detenerAudio();
-  }
-
   inicializarMenuListeners();
   if (typeof inicializarWordleListeners === 'function') inicializarWordleListeners();
   if (typeof inicializarIdiomasListeners === 'function') inicializarIdiomasListeners();
