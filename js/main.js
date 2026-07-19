@@ -229,14 +229,6 @@ function detenerJuegoActual() {
   if (juegoActual) {
     juegoActual.detenerTimer();
   }
-  // Detener juego de idiomas si está activo
-  if (typeof idiomasJuego !== 'undefined' && idiomasJuego) {
-    idiomasJuego.detenerTimer();
-  }
-  // Detener audio TTS si está sonando
-  if (typeof detenerAudio === 'function') {
-    detenerAudio();
-  }
   // Detener sonido tick por si está en loop
   if (sounds.tick) {
     sounds.tick.pause();
@@ -645,67 +637,6 @@ function mostrarResultados() {
   animarNumero($('res-score-val'), 0, r.puntaje, 800);
 }
 
-/** Muestra la pantalla de resultados con un resumen ya construido (para modos externos como idiomas). */
-function mostrarResultadosConResumen(r) {
-  puntajeGuardado = false;
-
-  const statsPrevia = obtenerEstadisticas();
-  const mejorPuntajePrevio = statsPrevia.mejorPuntaje;
-
-  const pct = r.porcentaje;
-  let emoji, titulo, sub;
-  if (pct === 100) { emoji='🏆'; titulo='¡Perfecto!';       sub='¡Reconociste todos los idiomas!'; }
-  else if (pct >= 80) { emoji='🌟'; titulo='¡Excelente!';   sub='¡Oído y vista de lingüista!'; }
-  else if (pct >= 60) { emoji='👏'; titulo='¡Bien hecho!';  sub='¡Buen trabajo con los idiomas!'; }
-  else if (pct >= 40) { emoji='🙂'; titulo='Puedes mejorar'; sub='¡Sigue escuchando idiomas!'; }
-  else               { emoji='😅'; titulo='¡A practicar!';  sub='¡Los idiomas son difíciles, no te rindas!'; }
-
-  $('res-emoji').textContent     = emoji;
-  $('res-title').textContent     = titulo;
-  $('res-sub').textContent       = sub;
-  $('res-score-val').textContent = r.puntaje.toLocaleString('es-ES');
-  $('res-modo').textContent      = r.modo === 'idiomas_audio' ? '🔊 Idiomas · Audio' : '✍️ Idiomas · Escritura';
-  $('res-stat-aciertos').textContent = `${r.aciertos}/${r.total}`;
-  $('res-stat-pct').textContent      = `${r.porcentaje}%`;
-  $('res-stat-racha').textContent    = r.racha;
-  $('res-stat-puntaje').textContent  = Math.max(r.puntaje, mejorPuntajePrevio).toLocaleString('es-ES');
-
-  const esMejorPuntaje = r.puntaje > mejorPuntajePrevio && r.puntaje > 0;
-  if (pct === 100 || esMejorPuntaje) {
-    playVictorySound();
-    if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-  } else {
-    playVictorySound();
-  }
-
-  // Historial simplificado para idiomas
-  const historyList = $('history-list');
-  historyList.innerHTML = '';
-  const histContent = $('history-content');
-  const histWrapper = $('history-accordion');
-  histContent.style.maxHeight = '0px';
-  histWrapper.classList.remove('open');
-
-  r.historial.forEach((item, i) => {
-    const li = document.createElement('li');
-    li.className = `history-item ${item.correcto ? 'correct' : 'wrong'}`;
-    li.innerHTML = `
-      <div class="history-item-header">
-        <span class="history-item-q">#${i + 1}. ${item.idioma}</span>
-        <span class="history-item-status">${item.correcto ? '✓ Correcto' : '✗ Incorrecto'}</span>
-      </div>
-    `;
-    historyList.appendChild(li);
-  });
-
-  $('input-nombre').value = nombreJugador || '';
-  $('btn-guardar').disabled = false;
-  $('msg-guardado').style.display = 'none';
-
-  mostrarScreen('results');
-  animarNumero($('res-score-val'), 0, r.puntaje, 800);
-}
-
 /** Anima un número del valor inicial al final. */
 function animarNumero(el, desde, hasta, duracion) {
   const inicio = performance.now();
@@ -971,20 +902,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   inicializarMenuListeners(); // registra listeners UNA SOLA VEZ
   inicializarWordleListeners(); // listeners del wordle (una sola vez)
-  inicializarIdiomasListeners(); // listeners del modal de idiomas (una sola vez)
   refrescarMenu();            // pone la UI en estado inicial
   inicializarPanelesLaterales();
   mostrarScreen('menu');
 
   // Botón GeoWordle en el menú
   $('btn-wordle-menu').addEventListener('click', abrirWordle);
-
-  // Card de idiomas en el menú
-  const cardIdiomas = $('modo-idiomas');
-  if (cardIdiomas) {
-    cardIdiomas.addEventListener('click', abrirIdiomasModal);
-    cardIdiomas.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') abrirIdiomasModal();
-    });
-  }
 });
