@@ -935,10 +935,11 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarPanelesLaterales();
   mostrarScreen('menu');
 
-  if ($('btn-wordle-menu')) $('btn-wordle-menu').addEventListener('click', abrirWordle);
+  if ($('btn-wordle-menu') && typeof abrirWordle === 'function')
+    $('btn-wordle-menu').addEventListener('click', abrirWordle);
 
   const cardIdiomas = $('modo-idiomas');
-  if (cardIdiomas) {
+  if (cardIdiomas && typeof abrirIdiomasModal === 'function') {
     cardIdiomas.addEventListener('click', abrirIdiomasModal);
     cardIdiomas.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') abrirIdiomasModal();
