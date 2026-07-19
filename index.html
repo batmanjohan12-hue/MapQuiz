@@ -148,6 +148,18 @@
             </div>
           </div>
 
+          <!-- Card especial: Idiomas (abre modal de selección) -->
+          <div class="modo-card modo-card-idiomas" id="modo-idiomas" tabindex="0" role="button" aria-label="Modo idiomas">
+            <div class="modo-card-main">
+              <div class="modo-emoji">🗣️</div>
+              <div>
+                <div class="modo-nombre">Idiomas</div>
+                <div class="modo-desc">Reconoce idiomas por escritura o por audio</div>
+              </div>
+              <span class="modo-arrow idiomas-badge">✨ Nuevo</span>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -509,6 +521,42 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════
+     MODAL — SELECCIÓN SUBMODO IDIOMAS
+════════════════════════════════════════════════════════ -->
+<div id="idiomas-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Elige el modo de idiomas">
+  <div class="modal glass">
+    <button id="btn-cerrar-idiomas-modal" class="modal-close" aria-label="Cerrar">✕</button>
+    <div class="idiomas-modal-header">
+      <div class="idiomas-modal-emoji">🗣️</div>
+      <h2 class="idiomas-modal-titulo">Modo Idiomas</h2>
+      <p class="idiomas-modal-sub">¿Cómo quieres identificar el idioma?</p>
+    </div>
+    <div class="idiomas-submodo-grid">
+      <button id="btn-idiomas-escritura" class="idiomas-submodo-card">
+        <div class="idiomas-submodo-emoji">✍️</div>
+        <div class="idiomas-submodo-nombre">Escritura</div>
+        <div class="idiomas-submodo-desc">Lee un fragmento de texto y adivina en qué idioma está escrito</div>
+        <div class="idiomas-submodo-ejemplo">
+          <span class="ej-texto">おはようございます</span>
+          <span class="ej-flecha">→</span>
+          <span class="ej-resp">¿Japonés?</span>
+        </div>
+      </button>
+      <button id="btn-idiomas-audio" class="idiomas-submodo-card">
+        <div class="idiomas-submodo-emoji">🔊</div>
+        <div class="idiomas-submodo-nombre">Audio</div>
+        <div class="idiomas-submodo-desc">Escucha un fragmento de voz y adivina qué idioma es</div>
+        <div class="idiomas-submodo-ejemplo">
+          <span class="ej-texto">🎵 ···</span>
+          <span class="ej-flecha">→</span>
+          <span class="ej-resp">¿Ruso?</span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
      SCRIPTS
 ════════════════════════════════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -516,6 +564,7 @@
 <script src="js/storage.js"></script>
 <script src="js/game.js"></script>
 <script src="js/wordle.js"></script>
+<script src="js/idiomas.js"></script>
 <script src="js/main.js"></script>
 
 </body>
