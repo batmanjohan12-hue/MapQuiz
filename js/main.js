@@ -13,7 +13,7 @@ let puntajeGuardado = false;
 // ── Referencia a elementos DOM ─────────────────────────────
 const $ = id => document.getElementById(id);
 
-// screens se inicializa dentro del DOMContentLoaded
+// screens se inicializa en DOMContentLoaded cuando el DOM ya existe
 let screens = {};
 
 function abrirMenu() {
@@ -150,23 +150,28 @@ function actualizarQuickStats() {
   $('qs-racha').textContent     = stats.rachaMaxima;
 }
 
-/** Solo refresca el estado visual del menú. Sin tocar listeners. */
+/** Refresca solo la UI del menú, sin registrar listeners nuevos. */
 function refrescarMenu() {
   actualizarQuickStats();
   document.querySelectorAll('.region-pill').forEach(p => {
     p.classList.toggle('selected', p.dataset.region === regionSeleccionada);
   });
-  // Cerrar submenús de modo al volver al menú
   document.querySelectorAll('.modo-card').forEach(c => {
     c.classList.remove('selected');
     c.querySelectorAll('.formato-pill').forEach(p => p.classList.remove('active'));
   });
 }
 
-/** Registra listeners del menú. Se llama UNA SOLA VEZ al arrancar la app. */
+/** Alias de compatibilidad. */
+function inicializarMenu() { refrescarMenu(); }
+
+/** Registra todos los listeners del menú UNA SOLA VEZ. */
 function inicializarMenuListeners() {
   document.querySelectorAll('.modo-card').forEach(card => {
+    // Ignorar la card especial de idiomas
+    if (card.id === 'modo-idiomas') return;
     const mainRow = card.querySelector('.modo-card-main');
+    if (!mainRow) return;
     mainRow.addEventListener('click', () => {
       const yaSeleccionada = card.classList.contains('selected');
       document.querySelectorAll('.modo-card').forEach(c => c.classList.remove('selected'));
@@ -175,21 +180,17 @@ function inicializarMenuListeners() {
         modoSeleccionado = card.dataset.modo;
       }
     });
-
     card.querySelectorAll('.formato-pill').forEach(pill => {
-      pill.addEventListener('click', (e) => {
+      pill.addEventListener('click', e => {
         e.stopPropagation();
         formatoSeleccionado = pill.dataset.formato;
-
         const paises = getPaisesPorRegion(regionSeleccionada);
         if (paises.length < 4) {
           mostrarToast('No hay suficientes países en esta región', 'wrong', 2500);
           return;
         }
-
         card.querySelectorAll('.formato-pill').forEach(p => p.classList.remove('active'));
         pill.classList.add('active');
-
         setTimeout(() => iniciarJuego(modoSeleccionado, regionSeleccionada), 180);
       });
     });
@@ -210,11 +211,6 @@ function inicializarMenuListeners() {
   });
 }
 
-/** Alias para compatibilidad: refresca UI sin duplicar listeners. */
-function inicializarMenu() {
-  refrescarMenu();
-}
-
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //  LÓGICA DE JUEGO
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -223,14 +219,6 @@ function inicializarMenu() {
 function detenerJuegoActual() {
   if (juegoActual) {
     juegoActual.detenerTimer();
-  }
-  // Detener juego de idiomas si está activo
-  if (typeof idiomasJuego !== 'undefined' && idiomasJuego) {
-    idiomasJuego.detenerTimer();
-  }
-  // Detener audio TTS si está sonando
-  if (typeof detenerAudio === 'function') {
-    detenerAudio();
   }
   // Detener sonido tick por si está en loop
   if (sounds.tick) {
@@ -640,21 +628,18 @@ function mostrarResultados() {
   animarNumero($('res-score-val'), 0, r.puntaje, 800);
 }
 
-/** Muestra la pantalla de resultados con un resumen ya construido (para modos externos como idiomas). */
+/** Muestra resultados con un resumen ya construido (para modos externos como idiomas). */
 function mostrarResultadosConResumen(r) {
   puntajeGuardado = false;
-
   const statsPrevia = obtenerEstadisticas();
   const mejorPuntajePrevio = statsPrevia.mejorPuntaje;
-
   const pct = r.porcentaje;
   let emoji, titulo, sub;
-  if (pct === 100) { emoji='🏆'; titulo='¡Perfecto!';       sub='¡Reconociste todos los idiomas!'; }
-  else if (pct >= 80) { emoji='🌟'; titulo='¡Excelente!';   sub='¡Oído y vista de lingüista!'; }
-  else if (pct >= 60) { emoji='👏'; titulo='¡Bien hecho!';  sub='¡Buen trabajo con los idiomas!'; }
-  else if (pct >= 40) { emoji='🙂'; titulo='Puedes mejorar'; sub='¡Sigue escuchando idiomas!'; }
-  else               { emoji='😅'; titulo='¡A practicar!';  sub='¡Los idiomas son difíciles, no te rindas!'; }
-
+  if (pct === 100)      { emoji='🏆'; titulo='¡Perfecto!';       sub='¡Reconociste todos los idiomas!'; }
+  else if (pct >= 80)   { emoji='🌟'; titulo='¡Excelente!';      sub='¡Oído y vista de lingüista!'; }
+  else if (pct >= 60)   { emoji='👏'; titulo='¡Bien hecho!';     sub='¡Buen trabajo con los idiomas!'; }
+  else if (pct >= 40)   { emoji='🙂'; titulo='Puedes mejorar';   sub='¡Sigue escuchando idiomas!'; }
+  else                  { emoji='😅'; titulo='¡A practicar!';    sub='¡Los idiomas son difíciles, no te rindas!'; }
   $('res-emoji').textContent     = emoji;
   $('res-title').textContent     = titulo;
   $('res-sub').textContent       = sub;
@@ -664,39 +649,25 @@ function mostrarResultadosConResumen(r) {
   $('res-stat-pct').textContent      = `${r.porcentaje}%`;
   $('res-stat-racha').textContent    = r.racha;
   $('res-stat-puntaje').textContent  = Math.max(r.puntaje, mejorPuntajePrevio).toLocaleString('es-ES');
-
-  const esMejorPuntaje = r.puntaje > mejorPuntajePrevio && r.puntaje > 0;
-  if (pct === 100 || esMejorPuntaje) {
+  if (pct === 100 || r.puntaje > mejorPuntajePrevio) {
     playVictorySound();
     if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-  } else {
-    playVictorySound();
-  }
-
-  // Historial simplificado para idiomas
+  } else { playVictorySound(); }
   const historyList = $('history-list');
   historyList.innerHTML = '';
   const histContent = $('history-content');
   const histWrapper = $('history-accordion');
-  histContent.style.maxHeight = '0px';
-  histWrapper.classList.remove('open');
-
+  if (histContent) histContent.style.maxHeight = '0px';
+  if (histWrapper) histWrapper.classList.remove('open');
   r.historial.forEach((item, i) => {
     const li = document.createElement('li');
     li.className = `history-item ${item.correcto ? 'correct' : 'wrong'}`;
-    li.innerHTML = `
-      <div class="history-item-header">
-        <span class="history-item-q">#${i + 1}. ${item.idioma}</span>
-        <span class="history-item-status">${item.correcto ? '✓ Correcto' : '✗ Incorrecto'}</span>
-      </div>
-    `;
+    li.innerHTML = `<div class="history-item-header"><span class="history-item-q">#${i+1}. ${item.idioma}</span><span class="history-item-status">${item.correcto ? '✓ Correcto' : '✗ Incorrecto'}</span></div>`;
     historyList.appendChild(li);
   });
-
   $('input-nombre').value = nombreJugador || '';
   $('btn-guardar').disabled = false;
   $('msg-guardado').style.display = 'none';
-
   mostrarScreen('results');
   animarNumero($('res-score-val'), 0, r.puntaje, 800);
 }
@@ -715,7 +686,7 @@ function animarNumero(el, desde, hasta, duracion) {
 }
 
 // ── Guardar puntaje ────────────────────────────────────────
-$('btn-guardar').addEventListener('click', async () => {
+$('btn-guardar').addEventListener('click', () => {
   const nombre = $('input-nombre').value.trim();
   if (!nombre) {
     $('input-nombre').focus();
@@ -727,20 +698,11 @@ $('btn-guardar').addEventListener('click', async () => {
 
   nombreJugador = nombre;
   const r = juegoActual.obtenerResumen();
-
-  // Feedback inmediato en la UI
-  $('btn-guardar').disabled = true;
-  $('btn-guardar').textContent = CLOUD_ENABLED ? 'Guardando... ⏳' : 'Guardado ✅';
-
-  const pos = await guardarPuntaje({ nombre, ...r });
+  guardarPuntaje({ nombre, ...r });
   puntajeGuardado = true;
 
+  $('btn-guardar').disabled = true;
   $('msg-guardado').style.display = 'block';
-  if (pos && pos <= 10) {
-    $('msg-guardado').innerHTML = `✅ ¡Puntaje guardado! Estás en el <strong>#${pos}</strong> del ranking global 🏆`;
-  } else {
-    $('msg-guardado').innerHTML = `✅ ¡Puntaje guardado con éxito!`;
-  }
 });
 
 // ── Botones de resultados ──────────────────────────────────
@@ -761,37 +723,23 @@ $('btn-cambiar-modo').addEventListener('click', () => {
 let rankingModoActual = 'todos';
 
 function abrirRanking() {
+  renderizarRanking(rankingModoActual);
   $('ranking-modal').classList.add('open');
-  renderizarRankingAsync(rankingModoActual);
 }
 
 function cerrarRanking() {
   $('ranking-modal').classList.remove('open');
 }
 
-/** Renderiza el ranking (muestra spinner mientras carga de la nube). */
-async function renderizarRankingAsync(modo) {
+function renderizarRanking(modo) {
   rankingModoActual = modo;
-
   // Actualizar tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tab === modo);
   });
 
+  const datos = obtenerRankingPorModo(modo);
   const tbody = $('ranking-tbody');
-
-  // Mostrar spinner de carga
-  tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">⏳ Cargando clasificación...</td></tr>`;
-
-  // Obtener datos (nube si disponible, sino local)
-  let datos;
-  try {
-    const ranking = await obtenerRankingAsync();
-    datos = ranking.filter(e => e.modo === modo || modo === 'todos');
-  } catch(e) {
-    datos = obtenerRankingPorModo(modo);
-  }
-
   tbody.innerHTML = '';
 
   if (!datos.length) {
@@ -799,7 +747,7 @@ async function renderizarRankingAsync(modo) {
     return;
   }
 
-  datos.slice(0, 10).forEach((entry, i) => {
+  datos.forEach((entry, i) => {
     const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
     const modoInfo = MODOS[entry.modo] || { emoji: '?', label: entry.modo };
     const tr = document.createElement('tr');
@@ -812,11 +760,6 @@ async function renderizarRankingAsync(modo) {
     `;
     tbody.appendChild(tr);
   });
-}
-
-// Alias síncrono para compatibilidad interna
-function renderizarRanking(modo) {
-  renderizarRankingAsync(modo);
 }
 
 // Listeners ranking
@@ -921,8 +864,10 @@ function renderizarAtlas() {
 //  INICIALIZACIÓN Y BINDINGS DE EVENTOS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 document.addEventListener('DOMContentLoaded', () => {
-  // Seleccionar región por defecto
+  // Seleccionar modo, región y formato por defecto
+  document.querySelector('[data-modo="banderas"]')?.classList.add('selected');
   document.querySelector('[data-region="mundo"]')?.classList.add('selected');
+  document.querySelector('[data-formato="clasico"]')?.classList.add('selected');
 
   // Inicializar UI de sonido
   actualizarMuteUI();
@@ -964,7 +909,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('btn-theme').textContent = newTheme === 'light' ? '🌙' : '☀️';
   });
 
-  // Inicializar mapa de pantallas (DOM ya disponible aquí)
+  // Inicializar screens AQUÍ, cuando el DOM ya existe
   screens = {
     menu:    $('screen-menu'),
     game:    $('screen-game'),
@@ -973,17 +918,25 @@ document.addEventListener('DOMContentLoaded', () => {
     atlas:   $('screen-atlas'),
   };
 
-  inicializarMenuListeners(); // registra listeners UNA SOLA VEZ
-  inicializarWordleListeners(); // listeners del wordle (una sola vez)
-  inicializarIdiomasListeners(); // listeners del modal de idiomas (una sola vez)
-  refrescarMenu();            // pone la UI en estado inicial
+  // Detener juego anterior al salir (bug timer persistente)
+  const _detenerJuegoActual = detenerJuegoActual;
+  function detenerJuegoActual() {
+    _detenerJuegoActual();
+    if (typeof idiomasJuego !== 'undefined' && idiomasJuego) idiomasJuego.detenerTimer();
+    if (typeof detenerAudio === 'function') detenerAudio();
+  }
+
+  inicializarMenuListeners();
+  if (typeof inicializarWordleListeners === 'function') inicializarWordleListeners();
+  if (typeof inicializarIdiomasListeners === 'function') inicializarIdiomasListeners();
+
+  refrescarMenu();
+  document.querySelector('[data-region="mundo"]')?.classList.add('selected');
   inicializarPanelesLaterales();
   mostrarScreen('menu');
 
-  // Botón GeoWordle en el menú
-  $('btn-wordle-menu').addEventListener('click', abrirWordle);
+  if ($('btn-wordle-menu')) $('btn-wordle-menu').addEventListener('click', abrirWordle);
 
-  // Card de idiomas en el menú
   const cardIdiomas = $('modo-idiomas');
   if (cardIdiomas) {
     cardIdiomas.addEventListener('click', abrirIdiomasModal);

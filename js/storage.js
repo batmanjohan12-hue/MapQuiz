@@ -3,51 +3,38 @@
 // ============================================================
 
 const STORAGE_KEYS = {
-  RANKING_LOCAL: 'mq_ranking_local',
-  RANKING_CLOUD: 'mq_ranking_cloud_cache',
+  RANKING_LOCAL:    'mq_ranking_local',
+  RANKING_CLOUD:    'mq_ranking_cloud_cache',
   RANKING_CLOUD_TS: 'mq_ranking_cloud_ts',
-  STATS:   'mq_stats',
+  STATS:            'mq_stats',
 };
 
-// ── CONFIGURACIÓN DEL RANKING COMPARTIDO ─────────────────────
-// Usamos JSONBin.io como backend gratuito para ranking compartido.
-// Crea una cuenta gratuita en https://jsonbin.io y reemplaza estos valores:
 const CLOUD_CONFIG = {
-  BIN_ID:  '6a593334da38895dfe67bacb',   // <-- reemplaza con tu Bin ID de jsonbin.io
-  API_KEY: '$2a$10$s3VSeizWonolyP.4JvAIl.0X0vqX6g4TA64ILwl.xP4t1oAl.Cne2',  // <-- reemplaza con tu API key de jsonbin.io
-  CACHE_TTL: 30 * 1000,        // Caché local de 30 segundos
+  BIN_ID:  '6a593334da38895dfe67bacb',
+  API_KEY: '$2a$10$s3VSeizWonolyP.4JvAIl.0X0vqX6g4TA64ILwl.xP4t1oAl.Cne2',
+  CACHE_TTL: 30 * 1000,
 };
-const CLOUD_ENABLED = CLOUD_CONFIG.BIN_ID !== 'TU_BIN_ID_AQUI';
+const CLOUD_ENABLED = true;
 
-// ── MIGRACIÓN: limpiar datos del sistema local anterior ───────
-// Versión del sistema de ranking. Cambiar este número fuerza
-// un reset del caché local en todos los navegadores.
-const RANKING_VERSION = '2'; // v2 = sistema compartido en la nube
+// ── MIGRACIÓN ─────────────────────────────────────────────────
+const RANKING_VERSION = '2';
 (function limpiarDatosViejos() {
   const versionKey = 'mq_ranking_version';
-  const versionActual = localStorage.getItem(versionKey);
-
-  // Si la versión no coincide (o no existe), limpiar todo el ranking local
-  if (versionActual !== RANKING_VERSION) {
-    localStorage.removeItem('mq_ranking');             // clave vieja v1
+  if (localStorage.getItem(versionKey) !== RANKING_VERSION) {
+    localStorage.removeItem('mq_ranking');
     localStorage.removeItem(STORAGE_KEYS.RANKING_LOCAL);
     localStorage.removeItem(STORAGE_KEYS.RANKING_CLOUD);
     localStorage.removeItem(STORAGE_KEYS.RANKING_CLOUD_TS);
     localStorage.setItem(versionKey, RANKING_VERSION);
-    console.info('[MapQuiz] Caché de ranking reiniciado a v' + RANKING_VERSION);
   }
 })();
 
-// ── RANKING EN LA NUBE ────────────────────────────────────────
+// ── NUBE ──────────────────────────────────────────────────────
 
-/**
- * Sube el ranking actualizado a JSONBin.io.
- * Devuelve true si tuvo éxito, false si falló.
- */
 async function subirRankingNube(ranking) {
   if (!CLOUD_ENABLED) return false;
   try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${CLOUD_CONFIG.BIN_ID}`, {
+    const res = await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_CONFIG.BIN_ID, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -57,45 +44,30 @@ async function subirRankingNube(ranking) {
       body: JSON.stringify({ ranking }),
     });
     return res.ok;
-  } catch (e) {
-    console.warn('[MapQuiz] No se pudo subir ranking a la nube:', e);
-    return false;
-  }
+  } catch(e) { return false; }
 }
 
-/**
- * Descarga el ranking de JSONBin.io.
- * Usa caché local para no hacer demasiadas peticiones.
- */
 async function descargarRankingNube() {
   if (!CLOUD_ENABLED) return null;
-
-  // Verificar caché
   const ts  = parseInt(localStorage.getItem(STORAGE_KEYS.RANKING_CLOUD_TS) || '0');
-  const now = Date.now();
-  if (now - ts < CLOUD_CONFIG.CACHE_TTL) {
+  if (Date.now() - ts < CLOUD_CONFIG.CACHE_TTL) {
     const cached = localStorage.getItem(STORAGE_KEYS.RANKING_CLOUD);
     if (cached) return JSON.parse(cached);
   }
-
   try {
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${CLOUD_CONFIG.BIN_ID}/latest`, {
+    const res = await fetch('https://api.jsonbin.io/v3/b/' + CLOUD_CONFIG.BIN_ID + '/latest', {
       headers: { 'X-Master-Key': CLOUD_CONFIG.API_KEY },
     });
     if (!res.ok) return null;
     const data = await res.json();
     const ranking = data.record?.ranking || [];
-    // Actualizar caché
     localStorage.setItem(STORAGE_KEYS.RANKING_CLOUD, JSON.stringify(ranking));
-    localStorage.setItem(STORAGE_KEYS.RANKING_CLOUD_TS, String(now));
+    localStorage.setItem(STORAGE_KEYS.RANKING_CLOUD_TS, String(Date.now()));
     return ranking;
-  } catch (e) {
-    console.warn('[MapQuiz] No se pudo descargar ranking de la nube:', e);
-    return null;
-  }
+  } catch(e) { return null; }
 }
 
-// ── RANKING LOCAL (fallback) ──────────────────────────────────
+// ── LOCAL ─────────────────────────────────────────────────────
 
 function obtenerRankingLocal() {
   const raw = localStorage.getItem(STORAGE_KEYS.RANKING_LOCAL);
@@ -106,65 +78,40 @@ function guardarRankingLocal(ranking) {
   localStorage.setItem(STORAGE_KEYS.RANKING_LOCAL, JSON.stringify(ranking));
 }
 
-// ── API PÚBLICA DE RANKING ────────────────────────────────────
+// ── API PÚBLICA ───────────────────────────────────────────────
 
-/**
- * Guarda una entrada en el ranking (local + nube si está configurada).
- * Devuelve la posición obtenida.
- */
 async function guardarPuntaje({ nombre, puntaje, modo, region, aciertos, total }) {
   const nuevaEntrada = {
     nombre, puntaje, modo, region, aciertos, total,
     fecha: new Date().toLocaleDateString('es-ES'),
   };
-
-  // Obtener ranking base (nube si disponible, sino local)
   let ranking = obtenerRankingLocal();
   if (CLOUD_ENABLED) {
     const nube = await descargarRankingNube();
     if (nube && nube.length > 0) ranking = nube;
   }
-
   ranking.push(nuevaEntrada);
   ranking.sort((a, b) => b.puntaje - a.puntaje);
   const top20 = ranking.slice(0, 20);
-
-  // Guardar localmente siempre
   guardarRankingLocal(top20);
-
-  // Intentar subir a la nube
   if (CLOUD_ENABLED) {
     const ok = await subirRankingNube(top20);
     if (ok) {
-      // Actualizar caché
       localStorage.setItem(STORAGE_KEYS.RANKING_CLOUD, JSON.stringify(top20));
       localStorage.setItem(STORAGE_KEYS.RANKING_CLOUD_TS, String(Date.now()));
     }
   }
-
-  // Calcular posición
-  const pos = top20.findIndex(e =>
-    e.nombre === nombre && e.puntaje === puntaje
-  ) + 1;
-  return pos;
+  return top20.findIndex(e => e.nombre === nombre && e.puntaje === puntaje) + 1;
 }
 
-/**
- * Obtiene el ranking completo (nube si disponible, sino local).
- * Versión asíncrona para cuando se abre el modal.
- */
 async function obtenerRankingAsync() {
   if (CLOUD_ENABLED) {
     const nube = await descargarRankingNube();
-    if (nube && nube.length > 0) {
-      guardarRankingLocal(nube); // sincronizar local
-      return nube;
-    }
+    if (nube && nube.length > 0) { guardarRankingLocal(nube); return nube; }
   }
   return obtenerRankingLocal();
 }
 
-/** Obtiene el ranking de forma síncrona (desde caché local). */
 function obtenerRanking() {
   if (CLOUD_ENABLED) {
     const cached = localStorage.getItem(STORAGE_KEYS.RANKING_CLOUD);
@@ -173,12 +120,10 @@ function obtenerRanking() {
   return obtenerRankingLocal();
 }
 
-/** Obtiene el ranking filtrado por modo. */
 function obtenerRankingPorModo(modo) {
   return obtenerRanking().filter(e => e.modo === modo || modo === 'todos');
 }
 
-/** Obtiene el ranking filtrado por modo (versión asíncrona). */
 async function obtenerRankingPorModoAsync(modo) {
   const ranking = await obtenerRankingAsync();
   return ranking.filter(e => e.modo === modo || modo === 'todos');
@@ -222,8 +167,6 @@ function actualizarEstadisticas({ modo, aciertos, total, racha, puntaje }) {
 
 /** Limpia todos los datos guardados. */
 function limpiarDatos() {
-  localStorage.removeItem(STORAGE_KEYS.RANKING_LOCAL);
-  localStorage.removeItem(STORAGE_KEYS.RANKING_CLOUD);
-  localStorage.removeItem(STORAGE_KEYS.RANKING_CLOUD_TS);
+  localStorage.removeItem(STORAGE_KEYS.RANKING);
   localStorage.removeItem(STORAGE_KEYS.STATS);
 }
