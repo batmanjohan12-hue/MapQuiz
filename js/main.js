@@ -13,13 +13,8 @@ let puntajeGuardado = false;
 // ── Referencia a elementos DOM ─────────────────────────────
 const $ = id => document.getElementById(id);
 
-const screens = {
-  menu:    $('screen-menu'),
-  game:    $('screen-game'),
-  results: $('screen-results'),
-  wordle:  $('screen-wordle'),
-  atlas:   $('screen-atlas'),
-};
+// screens se inicializa dentro del DOMContentLoaded
+let screens = {};
 
 function abrirMenu() {
   refrescarMenu();
@@ -968,6 +963,15 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('mq_theme', newTheme);
     $('btn-theme').textContent = newTheme === 'light' ? '🌙' : '☀️';
   });
+
+  // Inicializar mapa de pantallas (DOM ya disponible aquí)
+  screens = {
+    menu:    $('screen-menu'),
+    game:    $('screen-game'),
+    results: $('screen-results'),
+    wordle:  $('screen-wordle'),
+    atlas:   $('screen-atlas'),
+  };
 
   inicializarMenuListeners(); // registra listeners UNA SOLA VEZ
   inicializarWordleListeners(); // listeners del wordle (una sola vez)
