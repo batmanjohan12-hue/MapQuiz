@@ -818,6 +818,31 @@ body::after {
 }
 .modal-overlay.open .modal { transform: scale(1); }
 
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  font-size: .9rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--t-fast);
+  z-index: 10;
+}
+.modal-close:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(239,68,68,.08);
+  transform: scale(1.1);
+}
+
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 20px 24px;
@@ -1510,8 +1535,9 @@ body::after {
 
 /* Modal de selección de submodo */
 #idiomas-modal .modal {
-  max-width: 520px;
-  padding: 36px 32px 32px;
+  max-width: 420px;
+  padding: 40px 32px 32px;
+  position: relative;
 }
 
 .idiomas-modal-header {
@@ -1529,8 +1555,10 @@ body::after {
 
 .idiomas-submodo-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;   /* una sola columna mientras audio está oculto */
   gap: 14px;
+  max-width: 320px;
+  margin: 0 auto;
 }
 
 .idiomas-submodo-card {
