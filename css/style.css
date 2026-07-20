@@ -224,30 +224,53 @@ body::after {
 .menu-grid-layout {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
+  padding: 0 16px;
 }
 @media (min-width: 960px) {
   .menu-grid-layout {
     display: grid;
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 260px 1fr 280px;
+    gap: 28px;
     align-items: flex-start;
   }
 }
 
 .menu-left-col {
+  display: none; /* oculta en móvil */
+  flex-direction: column;
+  gap: 16px;
+}
+@media (min-width: 960px) {
+  .menu-left-col {
+    display: flex;
+    position: sticky;
+    top: 24px;
+  }
+}
+
+.menu-center-col {
   display: flex;
   flex-direction: column;
   gap: 40px;
   align-items: center;
+  min-width: 0;
 }
 
 .menu-right-col {
-  display: flex;
+  display: none; /* oculta en móvil */
   flex-direction: column;
   gap: 20px;
+}
+@media (min-width: 960px) {
+  .menu-right-col {
+    display: flex;
+    position: sticky;
+    top: 24px;
+  }
 }
 
 /* Side Panels */
@@ -1229,6 +1252,106 @@ body::after {
   font-size: 1rem;
 }
 
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   COLUMNA IZQUIERDA — Progreso regional + Racha GeoWordle
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Progreso por región */
+.region-progress-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.region-progress-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.region-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.region-progress-name {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-2);
+}
+.region-progress-pct {
+  font-size: .78rem;
+  font-weight: 700;
+  color: var(--primary);
+  font-family: var(--ff-head);
+}
+.region-progress-bar-track {
+  height: 7px;
+  background: var(--bg-2);
+  border-radius: var(--r-full);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.region-progress-bar-fill {
+  height: 100%;
+  border-radius: var(--r-full);
+  background: linear-gradient(90deg, var(--primary), #a78bfa);
+  transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  min-width: 0;
+}
+
+/* Racha GeoWordle */
+.wordle-racha-widget {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.wordle-racha-widget-item {
+  background: var(--bg-2);
+  border-radius: var(--r-md);
+  padding: 10px 8px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.wordle-racha-widget-val {
+  font-family: var(--ff-head);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.wordle-racha-widget-lbl {
+  font-size: .68rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.wordle-jugado-hoy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--r-md);
+  font-size: .8rem;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.wordle-jugado-hoy.jugado {
+  background: rgba(34,197,94,.1);
+  color: #16a34a;
+  border: 1px solid rgba(34,197,94,.3);
+}
+.wordle-jugado-hoy.pendiente {
+  background: rgba(99,110,255,.08);
+  color: var(--primary);
+  border: 1px solid rgba(99,110,255,.2);
+  cursor: pointer;
+  transition: var(--t-fast);
+}
+.wordle-jugado-hoy.pendiente:hover {
+  background: rgba(99,110,255,.15);
+}
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    GEOWORDLE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */

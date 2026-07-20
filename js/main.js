@@ -151,9 +151,98 @@ function actualizarQuickStats() {
   $('qs-racha').textContent     = stats.rachaMaxima;
 }
 
+/** Actualiza el widget de progreso por región en la columna izquierda. */
+function actualizarProgresoRegiones() {
+  const stats    = obtenerEstadisticas();
+  const container = $('region-progress-list');
+  if (!container) return;
+
+  const regiones = [
+    { id: 'america_norte', emoji: '🌎', label: 'América del Norte' },
+    { id: 'america_sur',   emoji: '🌎', label: 'América del Sur'   },
+    { id: 'europa',        emoji: '🌍', label: 'Europa'            },
+    { id: 'asia',          emoji: '🌏', label: 'Asia'              },
+    { id: 'africa',        emoji: '🌍', label: 'África'            },
+    { id: 'oceania',       emoji: '🌏', label: 'Oceanía'           },
+  ];
+
+  container.innerHTML = '';
+  regiones.forEach(r => {
+    // Calcular % de aciertos en esta región desde stats por región
+    const regionStats = stats.porRegion?.[r.id];
+    const aciertos    = regionStats?.aciertos  || 0;
+    const total       = regionStats?.total      || 0;
+    const pct         = total > 0 ? Math.round((aciertos / total) * 100) : 0;
+
+    const item = document.createElement('div');
+    item.className = 'region-progress-item';
+    item.innerHTML = `
+      <div class="region-progress-header">
+        <span class="region-progress-name">${r.emoji} ${r.label}</span>
+        <span class="region-progress-pct">${pct > 0 ? pct + '%' : '—'}</span>
+      </div>
+      <div class="region-progress-bar-track">
+        <div class="region-progress-bar-fill" style="width:${pct}%"></div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+/** Actualiza el widget de racha del GeoWordle en la columna izquierda. */
+function actualizarWordleWidget() {
+  const stats = typeof getWordleStats === 'function' ? getWordleStats() : null;
+  if (!stats) return;
+
+  const elRacha   = $('ww-racha');
+  const elMax     = $('ww-max');
+  const elJugados = $('ww-jugados');
+  const elGanados = $('ww-ganados');
+  const elHoy     = $('ww-estado-hoy');
+
+  if (elRacha)   elRacha.textContent   = stats.rachaActual;
+  if (elMax)     elMax.textContent     = stats.rachaMaxima;
+  if (elJugados) elJugados.textContent = stats.jugados;
+  if (elGanados) elGanados.textContent = stats.jugados > 0
+    ? Math.round((stats.ganados / stats.jugados) * 100) + '%'
+    : '0%';
+
+  if (elHoy) {
+    // Ver si ya jugó hoy
+    const WORDLE_STORAGE_KEY = 'mq_wordle_estado';
+    const raw = localStorage.getItem(WORDLE_STORAGE_KEY);
+    const hoyUTC = new Date().toISOString().slice(0, 10);
+    let jugadoHoy = false;
+    let ganoHoy   = false;
+    if (raw) {
+      try {
+        const estado = JSON.parse(raw);
+        if (estado.dia === hoyUTC && estado.terminado) {
+          jugadoHoy = true;
+          ganoHoy   = estado.gano;
+        }
+      } catch(e) {}
+    }
+
+    if (jugadoHoy) {
+      elHoy.className  = 'wordle-jugado-hoy jugado';
+      elHoy.textContent = ganoHoy ? '✅ ¡Adivinaste el país de hoy!' : '❌ Ya jugaste hoy';
+      elHoy.style.cursor = 'default';
+    } else {
+      elHoy.className  = 'wordle-jugado-hoy pendiente';
+      elHoy.textContent = '🎯 Jugar GeoWordle de hoy';
+      elHoy.onclick = () => {
+        if (typeof abrirWordle === 'function') abrirWordle();
+      };
+    }
+  }
+}
+
 /** Refresca solo la UI del menú, sin registrar listeners nuevos. */
 function refrescarMenu() {
   actualizarQuickStats();
+  actualizarProgresoRegiones();
+  actualizarWordleWidget();
   document.querySelectorAll('.region-pill').forEach(p => {
     p.classList.toggle('selected', p.dataset.region === regionSeleccionada);
   });

@@ -150,7 +150,7 @@ function obtenerEstadisticas() {
 }
 
 /** Actualiza las estadísticas tras una partida. */
-function actualizarEstadisticas({ modo, aciertos, total, racha, puntaje }) {
+function actualizarEstadisticas({ modo, region, aciertos, total, racha, puntaje }) {
   const stats = obtenerEstadisticas();
   stats.totalPartidas++;
   stats.totalAciertos  += aciertos;
@@ -158,9 +158,22 @@ function actualizarEstadisticas({ modo, aciertos, total, racha, puntaje }) {
   if (racha   > stats.rachaMaxima)  stats.rachaMaxima  = racha;
   if (puntaje > stats.mejorPuntaje) stats.mejorPuntaje = puntaje;
 
+  // Progreso por modo
   if (!stats.porModo[modo]) stats.porModo[modo] = { aciertos: 0, preguntas: 0 };
   stats.porModo[modo].aciertos  += aciertos;
   stats.porModo[modo].preguntas += total;
+
+  // Progreso por región
+  if (region && region !== 'mundo') {
+    if (!stats.porRegion) stats.porRegion = {};
+    if (!stats.porRegion[region]) stats.porRegion[region] = { aciertos: 0, total: 0 };
+    stats.porRegion[region].aciertos += aciertos;
+    stats.porRegion[region].total    += total;
+  } else if (region === 'mundo') {
+    // Si jugó "todo el mundo" sumar a todas las regiones con peso proporcional
+    // Simplificado: solo registrar como global
+    if (!stats.porRegion) stats.porRegion = {};
+  }
 
   localStorage.setItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
 }

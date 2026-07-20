@@ -60,8 +60,48 @@
   </div>
 
   <div class="menu-grid-layout">
-    <!-- COLUMNA IZQUIERDA -->
+
+    <!-- COLUMNA IZQUIERDA — Progreso + Wordle -->
     <div class="menu-left-col">
+
+      <!-- Progreso por región -->
+      <div class="side-panel glass">
+        <div class="panel-header">🗺️ Tu Progreso</div>
+        <div class="region-progress-list" id="region-progress-list">
+          <!-- Se genera dinámicamente -->
+        </div>
+      </div>
+
+      <!-- Racha GeoWordle -->
+      <div class="side-panel glass">
+        <div class="panel-header">🌍 GeoWordle</div>
+        <div class="wordle-racha-widget">
+          <div class="wordle-racha-widget-item">
+            <div class="wordle-racha-widget-val" id="ww-racha">0</div>
+            <div class="wordle-racha-widget-lbl">Racha actual</div>
+          </div>
+          <div class="wordle-racha-widget-item">
+            <div class="wordle-racha-widget-val" id="ww-max">0</div>
+            <div class="wordle-racha-widget-lbl">Racha máxima</div>
+          </div>
+          <div class="wordle-racha-widget-item">
+            <div class="wordle-racha-widget-val" id="ww-jugados">0</div>
+            <div class="wordle-racha-widget-lbl">Jugados</div>
+          </div>
+          <div class="wordle-racha-widget-item">
+            <div class="wordle-racha-widget-val" id="ww-ganados">0%</div>
+            <div class="wordle-racha-widget-lbl">Ganados</div>
+          </div>
+        </div>
+        <div id="ww-estado-hoy" class="wordle-jugado-hoy pendiente" role="button" tabindex="0">
+          🎯 Jugar GeoWordle de hoy
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COLUMNA CENTRAL -->
+    <div class="menu-center-col">
       <!-- Header -->
       <header class="menu-header">
         <div class="logo">
