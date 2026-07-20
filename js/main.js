@@ -117,28 +117,29 @@ function inicializarPanelesLaterales() {
     $('pd-poblacion').textContent = `👥 ${(pd.poblacion / 1000000).toFixed(1)} M hab.`;
   }
 
-  // 3. Mini Ranking
-  const datos = JSON.parse(localStorage.getItem('mq_ranking') || '[]');
+  // 3. Mini Ranking — sincronizado con la misma fuente que la tabla de clasificación
   const list = $('mini-ranking-list');
-  list.innerHTML = '';
-  
-  const top3 = datos.sort((a, b) => b.puntaje - a.puntaje).slice(0, 3);
-  if (top3.length === 0) {
-    list.innerHTML = `<div style="color: var(--text-muted); font-size: 0.9rem; text-align:center; padding: 10px 0;">Nadie ha jugado aún. ¡Sé el primero!</div>`;
-  } else {
-    top3.forEach((entry, i) => {
-      const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-      list.innerHTML += `
-        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-2); padding:8px 12px; border-radius:var(--r-sm);">
-          <div style="display:flex; gap:8px; align-items:center;">
-            <span style="font-size:1.1rem;">${posLabel}</span>
-            <span style="font-weight:600; font-size:0.95rem;">${entry.nombre}</span>
+  list.innerHTML = `<div style="color:var(--text-muted);font-size:.85rem;text-align:center;padding:8px 0;">⏳ Cargando...</div>`;
+  obtenerRankingAsync().then(datos => {
+    list.innerHTML = '';
+    const top3 = datos.slice(0, 3);
+    if (top3.length === 0) {
+      list.innerHTML = `<div style="color:var(--text-muted);font-size:.9rem;text-align:center;padding:10px 0;">Nadie ha jugado aún. ¡Sé el primero!</div>`;
+    } else {
+      top3.forEach((entry, i) => {
+        const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+        list.innerHTML += `
+          <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg-2);padding:8px 12px;border-radius:var(--r-sm);">
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:1.1rem;">${posLabel}</span>
+              <span style="font-weight:600;font-size:.95rem;">${entry.nombre}</span>
+            </div>
+            <span style="font-family:var(--ff-head);font-weight:700;color:var(--accent);">${entry.puntaje.toLocaleString('es-ES')} pts</span>
           </div>
-          <span style="font-family:var(--ff-head); font-weight:700; color:var(--accent);">${entry.puntaje} pts</span>
-        </div>
-      `;
-    });
-  }
+        `;
+      });
+    }
+  });
 }
 
 /** Renderiza las estadísticas rápidas en el menú. */
@@ -217,19 +218,33 @@ function inicializarMenuListeners() {
 
 /** Limpia TODOS los timers y sonidos del juego en curso antes de navegar. */
 function detenerJuegoActual() {
+  // Detener juego principal
   if (juegoActual) {
     juegoActual.detenerTimer();
+    juegoActual = null;
   }
-  // Detener sonido tick por si está en loop
+  // Detener juego de idiomas si estaba activo
+  if (typeof idiomasJuego !== 'undefined' && idiomasJuego) {
+    idiomasJuego.detenerTimer();
+    idiomasJuego = null;
+  }
+  // Detener audio TTS
+  if (typeof detenerAudio === 'function') detenerAudio();
+  // Detener tick
   if (sounds.tick) {
     sounds.tick.pause();
     sounds.tick.currentTime = 0;
   }
-  // Resetear la barra visual del timer
+  // Resetear barra de timer
   const fill  = $('timer-fill');
   const numEl = $('timer-num');
   if (fill)  { fill.style.width = '100%'; fill.classList.remove('medium', 'low'); }
   if (numEl) { numEl.textContent = CONFIG.TIEMPO_POR_PREGUNTA; numEl.classList.remove('low'); }
+  // Resetear barra de progreso
+  const progFill  = $('progress-fill');
+  const progLabel = $('progress-label');
+  if (progFill)  progFill.style.width = '0%';
+  if (progLabel) progLabel.textContent = '0 / 10';
 }
 
 function iniciarJuego(modo, region) {
@@ -686,7 +701,7 @@ function animarNumero(el, desde, hasta, duracion) {
 }
 
 // ── Guardar puntaje ────────────────────────────────────────
-$('btn-guardar').addEventListener('click', () => {
+$('btn-guardar').addEventListener('click', async () => {
   const nombre = $('input-nombre').value.trim();
   if (!nombre) {
     $('input-nombre').focus();
@@ -697,12 +712,28 @@ $('btn-guardar').addEventListener('click', () => {
   if (puntajeGuardado) return;
 
   nombreJugador = nombre;
-  const r = juegoActual.obtenerResumen();
-  guardarPuntaje({ nombre, ...r });
-  puntajeGuardado = true;
+
+  // Obtener resumen del juego activo (normal o idiomas)
+  let r;
+  if (typeof idiomasJuego !== 'undefined' && idiomasJuego && juegoActual === null) {
+    r = idiomasJuego.obtenerResumen();
+  } else {
+    r = juegoActual.obtenerResumen();
+  }
 
   $('btn-guardar').disabled = true;
-  $('msg-guardado').style.display = 'block';
+  $('btn-guardar').textContent = 'Guardando... ⏳';
+
+  const pos = await guardarPuntaje({ nombre, ...r });
+  puntajeGuardado = true;
+
+  const msgEl = $('msg-guardado');
+  msgEl.style.display = 'block';
+  if (pos && pos <= 10) {
+    msgEl.innerHTML = `✅ ¡Guardado! Estás en el <strong>#${pos}</strong> del ranking global 🏆`;
+  } else {
+    msgEl.innerHTML = `✅ ¡Puntaje guardado con éxito!`;
+  }
 });
 
 // ── Botones de resultados ──────────────────────────────────
@@ -723,8 +754,8 @@ $('btn-cambiar-modo').addEventListener('click', () => {
 let rankingModoActual = 'todos';
 
 function abrirRanking() {
-  renderizarRanking(rankingModoActual);
   $('ranking-modal').classList.add('open');
+  renderizarRanking(rankingModoActual);
 }
 
 function cerrarRanking() {
@@ -733,32 +764,33 @@ function cerrarRanking() {
 
 function renderizarRanking(modo) {
   rankingModoActual = modo;
-  // Actualizar tabs
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tab === modo);
   });
 
-  const datos = obtenerRankingPorModo(modo);
   const tbody = $('ranking-tbody');
-  tbody.innerHTML = '';
+  tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">⏳ Cargando clasificación...</td></tr>`;
 
-  if (!datos.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">🌍 ¡Aún no hay registros!<br>Sé el primero en guardar tu puntaje.</td></tr>`;
-    return;
-  }
-
-  datos.forEach((entry, i) => {
-    const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
-    const modoInfo = MODOS[entry.modo] || { emoji: '?', label: entry.modo };
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="rank-pos ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${posLabel}</td>
-      <td class="rank-nombre">${entry.nombre}</td>
-      <td class="rank-puntaje">${entry.puntaje.toLocaleString('es-ES')}</td>
-      <td class="rank-modo">${modoInfo.emoji} ${modoInfo.label}</td>
-      <td style="font-size:.75rem;color:var(--text-muted)">${entry.fecha}</td>
-    `;
-    tbody.appendChild(tr);
+  obtenerRankingAsync().then(ranking => {
+    const datos = ranking.filter(e => e.modo === modo || modo === 'todos');
+    tbody.innerHTML = '';
+    if (!datos.length) {
+      tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">🌍 ¡Aún no hay registros!<br>Sé el primero en guardar tu puntaje.</td></tr>`;
+      return;
+    }
+    datos.slice(0, 10).forEach((entry, i) => {
+      const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
+      const modoInfo = MODOS[entry.modo] || { emoji: '🗣️', label: entry.modo };
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="rank-pos ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${posLabel}</td>
+        <td class="rank-nombre">${entry.nombre}</td>
+        <td class="rank-puntaje">${entry.puntaje.toLocaleString('es-ES')}</td>
+        <td class="rank-modo">${modoInfo.emoji} ${modoInfo.label}</td>
+        <td style="font-size:.75rem;color:var(--text-muted)">${entry.fecha}</td>
+      `;
+      tbody.appendChild(tr);
+    });
   });
 }
 

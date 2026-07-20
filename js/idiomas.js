@@ -729,12 +729,11 @@ function actualizarHUDIdiomas(resultado) {
 // ── RESULTADOS DE IDIOMAS ─────────────────────────────────────
 
 function mostrarResultadosIdiomas() {
+  if (!idiomasJuego) return;
   idiomasJuego.detenerTimer();
   detenerAudio();
   const resumen = idiomasJuego.obtenerResumen();
   actualizarEstadisticas(resumen);
-
-  // Reutilizar pantalla de resultados del juego principal
   mostrarResultadosConResumen(resumen);
 }
 
@@ -744,6 +743,8 @@ function iniciarJuegoIdiomas(subModo) {
   // Detener juego anterior si hay uno
   if (idiomasJuego) idiomasJuego.detenerTimer();
   detenerAudio();
+  // Nullear juegoActual para que el guardado use idiomasJuego
+  if (typeof juegoActual !== 'undefined') juegoActual = null;
 
   cargarVoces(); // precarga en background
 
@@ -802,6 +803,9 @@ function inicializarIdiomasListeners() {
 }
 
 function abrirIdiomasModal() {
+  // Ocultar botón de audio (deshabilitado por ahora)
+  const btnAudio = $('btn-idiomas-audio');
+  if (btnAudio) btnAudio.style.display = 'none';
   $('idiomas-modal')?.classList.add('open');
 }
 

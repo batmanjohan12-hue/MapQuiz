@@ -148,6 +148,78 @@ const PAISES = [
   { id:132, nombre: "Fiyi",               code: "fj", capital: "Suva",           region: "oceania", poblacion: 896445   },
   { id:133, nombre: "Vanuatu",            code: "vu", capital: "Port Vila",      region: "oceania", poblacion: 307145   },
   { id:134, nombre: "Samoa",              code: "ws", capital: "Apia",           region: "oceania", poblacion: 198414   },
+
+  // ── AMÉRICA DEL NORTE (adicionales) ─────────────────────────
+  { id:135, nombre: "Barbados",               code: "bb", capital: "Bridgetown",       region: "america_norte", poblacion: 287375   },
+  { id:136, nombre: "San Vicente y las Granadinas", code: "vc", capital: "Kingstown", region: "america_norte", poblacion: 110940   },
+  { id:137, nombre: "Santa Lucía",            code: "lc", capital: "Castries",          region: "america_norte", poblacion: 183627   },
+  { id:138, nombre: "Granada",                code: "gd", capital: "Saint George's",    region: "america_norte", poblacion: 112523   },
+  { id:139, nombre: "Antigua y Barbuda",      code: "ag", capital: "Saint John's",      region: "america_norte", poblacion: 97929    },
+  { id:140, nombre: "Dominica",               code: "dm", capital: "Roseau",            region: "america_norte", poblacion: 71986    },
+  { id:141, nombre: "San Cristóbal y Nieves", code: "kn", capital: "Basseterre",        region: "america_norte", poblacion: 53199    },
+
+  // ── EUROPA (adicionales) ──────────────────────────────────────
+  { id:142, nombre: "Montenegro",             code: "me", capital: "Podgorica",         region: "europa",        poblacion: 628066   },
+  { id:143, nombre: "Andorra",                code: "ad", capital: "Andorra la Vella",  region: "europa",        poblacion: 77265    },
+  { id:144, nombre: "Liechtenstein",          code: "li", capital: "Vaduz",             region: "europa",        poblacion: 38128    },
+  { id:145, nombre: "Mónaco",                 code: "mc", capital: "Mónaco",            region: "europa",        poblacion: 39242    },
+  { id:146, nombre: "San Marino",             code: "sm", capital: "San Marino",        region: "europa",        poblacion: 33931    },
+  { id:147, nombre: "Kosovo",                 code: "xk", capital: "Pristina",          region: "europa",        poblacion: 1775378  },
+  { id:148, nombre: "Moldova",                code: "md", capital: "Chisináu",          region: "europa",        poblacion: 2657637  },
+  { id:149, nombre: "Bielorrusia",            code: "by", capital: "Minsk",             region: "europa",        poblacion: 9449323  },
+  { id:150, nombre: "Chipre",                 code: "cy", capital: "Nicosia",           region: "europa",        poblacion: 1207359  },
+
+  // ── ASIA (adicionales) ────────────────────────────────────────
+  { id:151, nombre: "Laos",                   code: "la", capital: "Vientián",          region: "asia",          poblacion: 7275560  },
+  { id:152, nombre: "Timor Oriental",         code: "tl", capital: "Dili",              region: "asia",          poblacion: 1318445  },
+  { id:153, nombre: "Brunéi",                 code: "bn", capital: "Bandar Seri Begawan",region: "asia",         poblacion: 437479   },
+  { id:154, nombre: "Maldivas",               code: "mv", capital: "Malé",              region: "asia",          poblacion: 540985   },
+  { id:155, nombre: "Bután",                  code: "bt", capital: "Timbu",             region: "asia",          poblacion: 771608   },
+  { id:156, nombre: "Kirguistán",             code: "kg", capital: "Biskek",            region: "asia",          poblacion: 6524195  },
+  { id:157, nombre: "Tayikistán",             code: "tj", capital: "Dusambé",           region: "asia",          poblacion: 9537645  },
+  { id:158, nombre: "Turkmenistán",           code: "tm", capital: "Asjabad",           region: "asia",          poblacion: 6031200  },
+  { id:159, nombre: "Líbano",                 code: "lb", capital: "Beirut",            region: "asia",          poblacion: 6825445  },
+  { id:160, nombre: "Palestina",              code: "ps", capital: "Ramala",            region: "asia",          poblacion: 5101414  },
+  { id:161, nombre: "Bahréin",                code: "bh", capital: "Manama",            region: "asia",          poblacion: 1701575  },
+
+  // ── ÁFRICA (adicionales) ──────────────────────────────────────
+  { id:162, nombre: "Malí",                   code: "ml", capital: "Bamako",            region: "africa",        poblacion: 20250833 },
+  { id:163, nombre: "Burkina Faso",           code: "bf", capital: "Uagadugú",          region: "africa",        poblacion: 20903273 },
+  { id:164, nombre: "Níger",                  code: "ne", capital: "Niamey",            region: "africa",        poblacion: 24206636 },
+  { id:165, nombre: "Chad",                   code: "td", capital: "Yamena",            region: "africa",        poblacion: 16425864 },
+  { id:166, nombre: "Sudán del Sur",          code: "ss", capital: "Yuba",              region: "africa",        poblacion: 11193725 },
+  { id:167, nombre: "Rep. Centroafricana",    code: "cf", capital: "Bangui",            region: "africa",        poblacion: 4829767  },
+  { id:168, nombre: "Rep. del Congo",         code: "cg", capital: "Brazzaville",       region: "africa",        poblacion: 5518092  },
+  { id:169, nombre: "Benín",                  code: "bj", capital: "Porto Novo",        region: "africa",        poblacion: 12123200 },
+  { id:170, nombre: "Togo",                   code: "tg", capital: "Lomé",              region: "africa",        poblacion: 8278724  },
+  { id:171, nombre: "Guinea",                 code: "gn", capital: "Conakri",           region: "africa",        poblacion: 13132795 },
+  { id:172, nombre: "Sierra Leona",           code: "sl", capital: "Freetown",          region: "africa",        poblacion: 7976985  },
+  { id:173, nombre: "Liberia",                code: "lr", capital: "Monrovia",          region: "africa",        poblacion: 5057681  },
+  { id:174, nombre: "Guinea-Bisáu",           code: "gw", capital: "Bisáu",             region: "africa",        poblacion: 1968001  },
+  { id:175, nombre: "Gambia",                 code: "gm", capital: "Banjul",            region: "africa",        poblacion: 2416668  },
+  { id:176, nombre: "Guinea Ecuatorial",      code: "gq", capital: "Malabo",            region: "africa",        poblacion: 1402985  },
+  { id:177, nombre: "Eritrea",                code: "er", capital: "Asmara",            region: "africa",        poblacion: 3546421  },
+  { id:178, nombre: "Yibuti",                 code: "dj", capital: "Yibuti",            region: "africa",        poblacion: 988000   },
+  { id:179, nombre: "Malaui",                 code: "mw", capital: "Lilongüe",          region: "africa",        poblacion: 19129952 },
+  { id:180, nombre: "Suazilandia",            code: "sz", capital: "Mbabane",           region: "africa",        poblacion: 1160164  },
+  { id:181, nombre: "Lesoto",                 code: "ls", capital: "Maseru",            region: "africa",        poblacion: 2142249  },
+  { id:182, nombre: "Burundi",                code: "bi", capital: "Gitega",            region: "africa",        poblacion: 11890784 },
+  { id:183, nombre: "Cabo Verde",             code: "cv", capital: "Praia",             region: "africa",        poblacion: 555987   },
+  { id:184, nombre: "Santo Tomé y Príncipe",  code: "st", capital: "Santo Tomé",        region: "africa",        poblacion: 219159   },
+  { id:185, nombre: "Comoras",                code: "km", capital: "Moroni",            region: "africa",        poblacion: 869601   },
+  { id:186, nombre: "Seychelles",             code: "sc", capital: "Victoria",          region: "africa",        poblacion: 98347    },
+  { id:187, nombre: "Mauricio",               code: "mu", capital: "Port Louis",        region: "africa",        poblacion: 1271768  },
+
+  // ── OCEANÍA (adicionales) ─────────────────────────────────────
+  { id:188, nombre: "Salomón",                code: "sb", capital: "Honiara",           region: "oceania",       poblacion: 686884   },
+  { id:189, nombre: "Kiribati",               code: "ki", capital: "Tarawa del Sur",    region: "oceania",       poblacion: 119449   },
+  { id:190, nombre: "Micronesia",             code: "fm", capital: "Palikir",           region: "oceania",       poblacion: 115023   },
+  { id:191, nombre: "Tonga",                  code: "to", capital: "Nukualofa",         region: "oceania",       poblacion: 105695   },
+  { id:192, nombre: "Palaos",                 code: "pw", capital: "Ngerulmud",         region: "oceania",       poblacion: 18094    },
+  { id:193, nombre: "Tuvalu",                 code: "tv", capital: "Funafuti",          region: "oceania",       poblacion: 11792    },
+  { id:194, nombre: "Nauru",                  code: "nr", capital: "Yaren",             region: "oceania",       poblacion: 10824    },
+  { id:195, nombre: "Marshall",               code: "mh", capital: "Majuro",            region: "oceania",       poblacion: 59190    },
+
 ];
 
 // ── VECINOS POR PAÍS (para el modo Wordle) ───────────────────
