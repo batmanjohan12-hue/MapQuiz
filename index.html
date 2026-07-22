@@ -15,6 +15,14 @@
 ════════════════════════════════════════════════════════ -->
 <div id="feedback-toast" class="feedback-toast" role="alert" aria-live="polite"></div>
 
+<!-- Canvas para temas de planetas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- Fondo de banderas animadas -->
+<div class="flags-bg" id="flags-bg">
+  <!-- Las filas de banderas se generan dinámicamente con JS -->
+</div>
+
 <!-- ═══════════════════════════════════════════════════════
      MODAL DE RANKING
 ════════════════════════════════════════════════════════ -->
@@ -55,8 +63,69 @@
 ════════════════════════════════════════════════════════ -->
 <main id="screen-menu" class="screen" role="main">
   <div class="top-controls">
-    <button id="btn-theme" class="btn-icon-toggle" aria-label="Cambiar tema" title="Cambiar tema">🌙</button>
-    <button id="btn-mute" class="btn-icon-toggle" aria-label="Silenciar sonido" title="Silenciar sonido">🔊</button>
+    <button id="btn-mute" class="btn-icon-toggle" aria-label="Silenciar sonido">🔊</button>
+    <!-- Botón de opciones extra -->
+    <div class="options-menu-wrap">
+      <button id="btn-options" class="options-menu-btn" aria-label="Opciones" title="Opciones">⚙️</button>
+      <div id="options-dropdown" class="options-dropdown" role="menu">
+
+        <!-- Navegación -->
+        <div class="options-section-label" data-i18n="nav">Navegación</div>
+        <button class="options-item" id="opt-atlas" role="menuitem">
+          <span class="opt-icon">📖</span>
+          <span data-i18n="atlas">Atlas de Geografía</span>
+        </button>
+        <button class="options-item" id="opt-ranking" role="menuitem">
+          <span class="opt-icon">🏆</span>
+          <span data-i18n="ranking">Clasificación</span>
+        </button>
+
+        <div class="options-divider"></div>
+
+        <!-- Tema -->
+        <div class="options-section-label" data-i18n="theme_label">Tema</div>
+        <button class="options-item theme-toggle-btn" id="opt-theme-toggle" role="menuitem" aria-expanded="false">
+          <span class="opt-icon">🎨</span>
+          <span data-i18n="theme">Apariencia</span>
+          <span class="opt-arrow">▶</span>
+        </button>
+        <div class="theme-submenu" id="theme-submenu">
+          <button class="options-item" data-theme-val="dark">
+            <span class="opt-icon">🌙</span>
+            <span data-i18n="theme_dark">Oscuro</span>
+            <span class="opt-check">✓</span>
+          </button>
+          <button class="options-item" data-theme-val="light">
+            <span class="opt-icon">☀️</span>
+            <span data-i18n="theme_light">Claro</span>
+            <span class="opt-check">✓</span>
+          </button>
+          <!-- Tema banderas: oculto temporalmente, en desarrollo
+          <button class="options-item" data-theme-val="flags">
+            <span class="opt-icon">🏳️</span>
+            <span data-i18n="theme_flags">Banderas animadas</span>
+            <span class="opt-check">✓</span>
+          </button>
+          -->
+        </div>
+
+        <div class="options-divider"></div>
+
+        <!-- Idioma -->
+        <div class="options-section-label" data-i18n="lang_label">Idioma</div>
+        <button class="options-item lang-item" data-lang="es" role="menuitem">
+          <span class="opt-icon">🇪🇸</span>
+          <span>Español</span>
+          <span class="opt-check">✓</span>
+        </button>
+        <button class="options-item lang-item" data-lang="en" role="menuitem">
+          <span class="opt-icon">🇬🇧</span>
+          <span>English</span>
+          <span class="opt-check">✓</span>
+        </button>
+
+      </div>
+    </div>
   </div>
 
   <div class="menu-grid-layout">
@@ -222,10 +291,6 @@
         <button id="btn-wordle-menu" class="btn btn-primary btn-lg wordle-menu-btn" aria-label="Jugar GeoWordle del día">
           🌍 GeoWordle del Día
         </button>
-        <div class="menu-links">
-          <button id="btn-atlas-menu" class="btn btn-ghost btn-sm">📖 Atlas de Geografía</button>
-          <button id="btn-ranking-menu" class="btn btn-ghost btn-sm">🏆 Clasificación</button>
-        </div>
       </footer>
     </div>
 

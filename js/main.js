@@ -226,11 +226,11 @@ function actualizarWordleWidget() {
 
     if (jugadoHoy) {
       elHoy.className  = 'wordle-jugado-hoy jugado';
-      elHoy.textContent = ganoHoy ? '✅ ¡Adivinaste el país de hoy!' : '❌ Ya jugaste hoy';
+      elHoy.textContent = ganoHoy ? t('played_won') : t('played_lost');
       elHoy.style.cursor = 'default';
     } else {
       elHoy.className  = 'wordle-jugado-hoy pendiente';
-      elHoy.textContent = '🎯 Jugar GeoWordle de hoy';
+      elHoy.textContent = t('play_today');
       elHoy.onclick = () => {
         if (typeof abrirWordle === 'function') abrirWordle();
       };
@@ -884,7 +884,7 @@ function renderizarRanking(modo) {
 }
 
 // Listeners ranking
-$('btn-ranking-menu').addEventListener('click', abrirRanking);
+if ($('btn-ranking-menu')) $('btn-ranking-menu').addEventListener('click', abrirRanking);
 $('btn-ranking-results').addEventListener('click', abrirRanking);
 $('btn-close-ranking').addEventListener('click', cerrarRanking);
 $('ranking-modal').addEventListener('click', e => { if (e.target === $('ranking-modal')) cerrarRanking(); });
@@ -1012,23 +1012,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Bindings del Atlas
-  $('btn-atlas-menu').addEventListener('click', abrirAtlas);
+  if ($('btn-atlas-menu')) $('btn-atlas-menu').addEventListener('click', abrirAtlas);
   $('btn-salir-atlas').addEventListener('click', cerrarAtlas);
   $('atlas-search').addEventListener('input', renderizarAtlas);
   $('atlas-filter-region').addEventListener('change', renderizarAtlas);
 
   // Theme Management
-  const currentTheme = localStorage.getItem('mq_theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', currentTheme);
-  $('btn-theme').textContent = currentTheme === 'light' ? '🌙' : '☀️';
-
-  $('btn-theme').addEventListener('click', () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    const newTheme = isDark ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('mq_theme', newTheme);
-    $('btn-theme').textContent = newTheme === 'light' ? '🌙' : '☀️';
-  });
+  // El tema se inicializa en el segundo DOMContentLoaded al final del archivo
 
   // Inicializar screens AQUÍ, cuando el DOM ya existe
   screens = {
@@ -1058,4 +1048,465 @@ document.addEventListener('DOMContentLoaded', () => {
       if (e.key === 'Enter' || e.key === ' ') abrirIdiomasModal();
     });
   }
+});
+
+// ════════════════════════════════════════════════════════════
+//  SISTEMA DE IDIOMAS (i18n)
+// ════════════════════════════════════════════════════════════
+
+const I18N = {
+  es: {
+    nav: 'Navegación',
+    atlas: 'Atlas de Geografía',
+    ranking: 'Clasificación',
+    theme_label: 'Tema',
+    theme: 'Apariencia',
+    theme_dark: 'Oscuro',
+    theme_light: 'Claro',
+    theme_planets_light: 'Planetas (claro)',
+    theme_planets_dark: 'Planetas (oscuro)',
+    theme_flags: 'Banderas animadas',
+    lang_label: 'Idioma',
+    // Menú principal
+    menu_title: 'El juego de geografía mundial',
+    menu_subtitle: 'Pon a prueba tu conocimiento geográfico.',
+    menu_tags: 'Banderas · Capitales · Población',
+    choose_mode: 'Elige un modo de juego',
+    filter_region: 'Filtrar por región',
+    wordle_btn: '🌍 GeoWordle del Día',
+    // Modos
+    mode_banderas: 'Banderas',
+    mode_banderas_desc: 'Identifica el país por su bandera',
+    mode_capitales: 'Capitales',
+    mode_capitales_desc: 'Encuentra la capital del país',
+    mode_poblacion: 'Población',
+    mode_poblacion_desc: '¿Qué país tiene más habitantes?',
+    mode_inverso: 'Banderas Inverso',
+    mode_inverso_desc: 'Identifica la bandera por el nombre del país',
+    mode_idiomas: 'Idiomas',
+    mode_idiomas_desc: 'Reconoce idiomas por escritura o por audio',
+    // Formatos
+    fmt_clasico: '⏱️ Clásico',
+    fmt_supervivencia: '❤️ Supervivencia',
+    fmt_contrareloj: '⚡ Contra Reloj',
+    // Regiones
+    region_mundo: '🌍 Todo el mundo',
+    region_america_norte: '🌎 América del Norte',
+    region_america_sur: '🌎 América del Sur',
+    region_europa: '🌍 Europa',
+    region_asia: '🌏 Asia',
+    region_africa: '🌍 África',
+    region_oceania: '🌏 Oceanía',
+    // HUD
+    hud_lives: 'Vidas',
+    // Resultados
+    save_score: 'Guardar puntaje',
+    your_name: 'Tu nombre',
+    save_btn: '💾 Guardar',
+    saved_msg: '✅ ¡Puntaje guardado!',
+    play_again: '🔄 Jugar de nuevo',
+    back_menu: '🏠 Menú',
+    // Panel izquierdo
+    your_progress: '🗺️ Tu Progreso',
+    geowordle_lbl: '🌍 GeoWordle',
+    play_today: '🎯 Jugar GeoWordle de hoy',
+    played_won: '✅ ¡Adivinaste el país de hoy!',
+    played_lost: '❌ Ya jugaste hoy',
+    // Panel derecho
+    country_day: '☀️ País del Día',
+    did_you_know: '💡 ¿Sabías que...?',
+    top3: '🏆 Top 3 Clasificación',
+    no_players: 'Nadie ha jugado aún. ¡Sé el primero!',
+    your_stats: '📊 Tus Estadísticas Rápidas',
+    stat_partidas: 'Partidas',
+    stat_aciertos: 'Aciertos',
+    stat_mejor: 'Mejor',
+    stat_racha: 'Racha',
+  },
+  en: {
+    nav: 'Navigation',
+    atlas: 'Geography Atlas',
+    ranking: 'Leaderboard',
+    theme_label: 'Theme',
+    theme: 'Appearance',
+    theme_dark: 'Dark',
+    theme_light: 'Light',
+    theme_planets_light: 'Planets (light)',
+    theme_planets_dark: 'Planets (dark)',
+    theme_flags: 'Animated flags',
+    lang_label: 'Language',
+    menu_title: 'The world geography game',
+    menu_subtitle: 'Test your geographic knowledge.',
+    menu_tags: 'Flags · Capitals · Population',
+    choose_mode: 'Choose a game mode',
+    filter_region: 'Filter by region',
+    wordle_btn: '🌍 GeoWordle of the Day',
+    mode_banderas: 'Flags',
+    mode_banderas_desc: 'Identify the country by its flag',
+    mode_capitales: 'Capitals',
+    mode_capitales_desc: 'Find the capital of the country',
+    mode_poblacion: 'Population',
+    mode_poblacion_desc: 'Which country has more inhabitants?',
+    mode_inverso: 'Reverse Flags',
+    mode_inverso_desc: 'Identify the flag by the country name',
+    mode_idiomas: 'Languages',
+    mode_idiomas_desc: 'Recognize languages by writing or audio',
+    fmt_clasico: '⏱️ Classic',
+    fmt_supervivencia: '❤️ Survival',
+    fmt_contrareloj: '⚡ Time Attack',
+    region_mundo: '🌍 Whole world',
+    region_america_norte: '🌎 North America',
+    region_america_sur: '🌎 South America',
+    region_europa: '🌍 Europe',
+    region_asia: '🌏 Asia',
+    region_africa: '🌍 Africa',
+    region_oceania: '🌏 Oceania',
+    hud_lives: 'Lives',
+    save_score: 'Save score',
+    your_name: 'Your name',
+    save_btn: '💾 Save',
+    saved_msg: '✅ Score saved!',
+    play_again: '🔄 Play again',
+    back_menu: '🏠 Menu',
+    your_progress: '🗺️ Your Progress',
+    geowordle_lbl: '🌍 GeoWordle',
+    play_today: '🎯 Play today\'s GeoWordle',
+    played_won: '✅ You guessed today\'s country!',
+    played_lost: '❌ Already played today',
+    country_day: '☀️ Country of the Day',
+    did_you_know: '💡 Did you know...?',
+    top3: '🏆 Top 3 Leaderboard',
+    no_players: 'Nobody has played yet. Be the first!',
+    your_stats: '📊 Your Quick Stats',
+    stat_partidas: 'Games',
+    stat_aciertos: 'Correct',
+    stat_mejor: 'Best',
+    stat_racha: 'Streak',
+  }
+};
+
+let currentLang = localStorage.getItem('mq_lang') || 'es';
+
+function t(key) {
+  return I18N[currentLang]?.[key] || I18N['es'][key] || key;
+}
+
+function aplicarIdioma() {
+  document.documentElement.setAttribute('lang', currentLang === 'en' ? 'en' : 'es');
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (I18N[currentLang]?.[key]) el.textContent = I18N[currentLang][key];
+  });
+  // Textos dinámicos específicos
+  const maps = {
+    'btn-wordle-menu':          t('wordle_btn'),
+    'menu-subtitle':            t('menu_subtitle'),
+    'menu-tags':                t('menu_tags'),
+    'lbl-modo':                 t('choose_mode'),
+    'lbl-region':               t('filter_region'),
+    'region-mundo':             t('region_mundo'),
+    'region-america-norte':     t('region_america_norte'),
+    'region-america-sur':       t('region_america_sur'),
+    'region-europa':            t('region_europa'),
+    'region-asia':              t('region_asia'),
+    'region-africa':            t('region_africa'),
+    'region-oceania':           t('region_oceania'),
+  };
+  // Paneles laterales
+  const panelMaps = {
+    'panel-progreso-header': t('your_progress'),
+    'panel-wordle-header':   t('geowordle_lbl'),
+    'ww-estado-hoy':         null, // se actualiza en actualizarWordleWidget
+  };
+  Object.entries(panelMaps).forEach(([id, txt]) => {
+    if (txt) { const el = $(id); if (el) el.textContent = txt; }
+  });
+  // Panel derecho headers con data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    const val = I18N[currentLang]?.[key];
+    if (val) el.textContent = val;
+  });
+  // Quick stats labels
+  const qstats = document.querySelectorAll('.qstat-lbl');
+  const qkeys  = ['stat_partidas','stat_aciertos','stat_mejor','stat_racha'];
+  qstats.forEach((el, i) => { if (qkeys[i]) el.textContent = t(qkeys[i]); });
+  Object.entries(maps).forEach(([id, txt]) => {
+    const el = $(id);
+    if (el) el.textContent = txt;
+  });
+  // Modos de juego
+  const modeMap = {
+    'modo-banderas':        ['mode_banderas',  'mode_banderas_desc'],
+    'modo-capitales':       ['mode_capitales', 'mode_capitales_desc'],
+    'modo-poblacion':       ['mode_poblacion', 'mode_poblacion_desc'],
+    'modo-banderas-inverso':['mode_inverso',   'mode_inverso_desc'],
+    'modo-idiomas':         ['mode_idiomas',   'mode_idiomas_desc'],
+  };
+  Object.entries(modeMap).forEach(([id, [nameKey, descKey]]) => {
+    const card = $(id);
+    if (!card) return;
+    const name = card.querySelector('.modo-nombre');
+    const desc = card.querySelector('.modo-desc');
+    if (name) name.textContent = t(nameKey);
+    if (desc) desc.textContent = t(descKey);
+  });
+  // Formato pills
+  document.querySelectorAll('.formato-pill[data-formato="clasico"]').forEach(p => p.textContent = t('fmt_clasico'));
+  document.querySelectorAll('.formato-pill[data-formato="supervivencia"]').forEach(p => p.textContent = t('fmt_supervivencia'));
+  document.querySelectorAll('.formato-pill[data-formato="contrareloj"]').forEach(p => p.textContent = t('fmt_contrareloj'));
+  // Botones de resultados
+  const btnPlayAgain = $('btn-play-again'); if (btnPlayAgain) btnPlayAgain.textContent = t('play_again');
+  const btnMenu2 = $('btn-menu-results'); if (btnMenu2) btnMenu2.textContent = t('back_menu');
+  // Marca idioma activo en el menú
+  document.querySelectorAll('.lang-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === currentLang);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  SISTEMA DE TEMAS ESPECIALES
+// ════════════════════════════════════════════════════════════
+
+let bgAnimFrame = null;
+let planetasCanvas = null;
+
+function aplicarTema(theme) {
+  // Cambio INSTANTÁNEO: deshabilitar todas las transiciones durante el cambio
+  document.documentElement.classList.add('changing-theme');
+
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('mq_theme', theme);
+
+  // Marca activo en el menú
+  document.querySelectorAll('[data-theme-val]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.themeVal === theme);
+  });
+
+  const flagsBg = $('flags-bg');
+  if (flagsBg) {
+    if (theme === 'flags') {
+      // Solo regenerar si no tiene contenido aún
+      if (!flagsBg.children.length) iniciarFondoBanderas(flagsBg);
+      flagsBg.style.display = 'flex';
+    } else {
+      flagsBg.style.display = 'none';
+    }
+  }
+
+  // Re-habilitar transiciones en el siguiente frame (después del repaint)
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.documentElement.classList.remove('changing-theme');
+    });
+  });
+}
+
+function iniciarAnimacionPlanetas(canvas, isDark) {
+  const ctx = canvas.getContext('2d');
+  const resize = () => {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Crear planetas
+  const planetas = Array.from({ length: 14 }, (_, i) => ({
+    x:    Math.random() * window.innerWidth,
+    y:    Math.random() * window.innerHeight,
+    r:    18 + Math.random() * 55,
+    vx:   (Math.random() - .5) * .25,
+    vy:   (Math.random() - .5) * .25,
+    hue:  Math.floor(Math.random() * 360),
+    rot:  Math.random() * Math.PI * 2,
+    vrot: (Math.random() - .5) * .003,
+  }));
+
+  const dibujarPlaneta = (p) => {
+    const { x, y, r, hue, rot } = p;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    // Esfera base
+    const grad = ctx.createRadialGradient(-r*.3, -r*.3, r*.1, 0, 0, r);
+    grad.addColorStop(0, `hsl(${hue},70%,${isDark?60:65}%)`);
+    grad.addColorStop(1, `hsl(${hue+30},55%,${isDark?25:35}%)`);
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = grad;
+    ctx.fill();
+    // Franjas tipo tierra
+    ctx.save();
+    ctx.clip();
+    ctx.fillStyle = `hsla(${(hue+120)%360},60%,${isDark?45:55}%,.55)`;
+    for (let i = -3; i <= 3; i++) {
+      ctx.beginPath();
+      ctx.ellipse(i*r*.4, 0, r*.9, r*.22, 0, 0, Math.PI*2);
+      ctx.fill();
+    }
+    ctx.restore();
+    // Brillo
+    const shine = ctx.createRadialGradient(-r*.3, -r*.35, 0, -r*.2, -r*.25, r*.55);
+    shine.addColorStop(0, 'rgba(255,255,255,.35)');
+    shine.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fillStyle = shine;
+    ctx.fill();
+    ctx.restore();
+  };
+
+  const animar = () => {
+    if (!document.documentElement.getAttribute('data-theme').startsWith('planets')) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    planetas.forEach(p => {
+      p.x   = (p.x + p.vx + canvas.width)  % canvas.width;
+      p.y   = (p.y + p.vy + canvas.height) % canvas.height;
+      p.rot += p.vrot;
+      ctx.globalAlpha = .18;
+      dibujarPlaneta(p);
+    });
+    ctx.globalAlpha = 1;
+    bgAnimFrame = requestAnimationFrame(animar);
+  };
+
+  canvas.style.opacity = '1';
+  animar();
+}
+
+function iniciarFondoBanderas(container) {
+  container.innerHTML = '';
+
+  // Lista completa de códigos — orden fijo para que el loop sea predecible
+  const allCodes = [
+    'us','gb','fr','de','es','it','jp','cn','br','mx','ar','ru',
+    'ca','au','in','kr','tr','sa','eg','za','ng','ke','th','id',
+    'pk','bd','vn','ph','my','co','ve','pe','cl','ec','bo','py',
+    'uy','gt','cu','do','hn','sv','ni','cr','pa','jm','ht','tt',
+    'no','se','dk','fi','nl','be','ch','at','pl','cz','ro','hu',
+    'gr','pt','ie','sk','bg','hr','rs','si','ba','al','mk','me',
+    'ua','by','md','lt','lv','ee','kz','uz','tm','kg','tj','af',
+    'ir','iq','jo','lb','il','ae','kw','qa','om','ye','mn','np',
+  ];
+
+  // Cuántas banderas caben en pantalla + buffer
+  // Ancho fijo por bandera: 54px + 8px gap = 62px
+  const flagW    = 62;
+  const perRow   = Math.ceil(window.innerWidth / flagW) + 4;
+  const numRows  = Math.ceil(window.innerHeight / 52) + 2;
+
+  for (let r = 0; r < numRows; r++) {
+    const row = document.createElement('div');
+    row.className = 'flags-row';
+
+    // Tomar un slice distinto por fila, rotando el array
+    const offset   = (r * 17) % allCodes.length;
+    const rowCodes = [];
+    for (let i = 0; i < perRow; i++) {
+      rowCodes.push(allCodes[(offset + i) % allCodes.length]);
+    }
+
+    // Duplicar EXACTAMENTE: la segunda mitad = primera mitad
+    // Esto garantiza que translateX(-50%) sea un loop perfecto
+    const doubled = [...rowCodes, ...rowCodes];
+    doubled.forEach(code => {
+      const img = document.createElement('img');
+      img.src     = `https://flagcdn.com/w40/${code}.png`;
+      img.alt     = '';
+      img.width   = 54;
+      img.height  = 36;
+      img.loading = 'lazy';
+      row.appendChild(img);
+    });
+
+    container.appendChild(row);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  MENÚ DESPLEGABLE DE OPCIONES
+// ════════════════════════════════════════════════════════════
+
+function inicializarOptionsMenu() {
+  const btnOpts   = $('btn-options');
+  const dropdown  = $('options-dropdown');
+  if (!btnOpts || !dropdown) return;
+
+  // Abrir / cerrar
+  btnOpts.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.options-menu-wrap')) {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  // Atlas
+  $('opt-atlas')?.addEventListener('click', () => {
+    dropdown.classList.remove('open');
+    abrirAtlas();
+  });
+
+  // Ranking
+  $('opt-ranking')?.addEventListener('click', () => {
+    dropdown.classList.remove('open');
+    abrirRanking();
+  });
+
+  // Tema — toggle submenu
+  const themeToggle  = $('opt-theme-toggle');
+  const themeSubmenu = $('theme-submenu');
+  themeToggle?.addEventListener('click', () => {
+    themeSubmenu.classList.toggle('open');
+    themeToggle.classList.toggle('open');
+    themeToggle.setAttribute('aria-expanded', themeSubmenu.classList.contains('open'));
+  });
+
+  // Selección de tema
+  document.querySelectorAll('[data-theme-val]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      aplicarTema(btn.dataset.themeVal);
+    });
+  });
+
+  // Selección de idioma
+  document.querySelectorAll('.lang-item').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentLang = btn.dataset.lang;
+      localStorage.setItem('mq_lang', currentLang);
+      aplicarIdioma();
+    });
+  });
+}
+
+// Inicializar al cargar
+document.addEventListener('DOMContentLoaded', () => {
+  // Restaurar tema guardado
+  const savedTheme = localStorage.getItem('mq_theme') || 'dark';
+  aplicarTema(savedTheme);
+
+  // Restaurar idioma
+  currentLang = localStorage.getItem('mq_lang') || 'es';
+  aplicarIdioma();
+
+  inicializarOptionsMenu();
+
+  // Añadir data-i18n dinámicamente a elementos del panel derecho
+  const headerMaps = [
+    ['panel-pais-dia',       'country_day',   '.panel-header'],
+    ['panel-curiosidades',   'did_you_know',  '.panel-header'],
+  ];
+  headerMaps.forEach(([panelId, key, sel]) => {
+    const panel = $(panelId);
+    if (panel) {
+      const h = panel.querySelector(sel);
+      if (h) h.setAttribute('data-i18n', key);
+    }
+  });
+
+  // Re-aplicar idioma para que se traduzca todo desde el inicio
+  aplicarIdioma();
 });

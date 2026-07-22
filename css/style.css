@@ -6,6 +6,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
 
 /* ── Variables ────────────────────────────────────────────── */
+.changing-theme *,
+.changing-theme *::before,
+.changing-theme *::after {
+  transition: none !important;
+}
+
 :root {
   /* Colores base */
   --bg-0:          #0f111a;
@@ -380,18 +386,22 @@ body::after {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  padding: 0 20px 18px;
-  /* Animación de apertura */
+  padding: 0 20px 0;
   max-height: 0;
   overflow: hidden;
-  opacity: 0;
-  transition: max-height 0.35s var(--ease), opacity 0.25s var(--ease), padding 0.3s var(--ease);
-  padding-bottom: 0;
+  /* Ocultamos con clip-path: los pills son invisibles hasta que el contenedor se abre */
+  clip-path: inset(0 0 100% 0);
+  transition: max-height 0.35s var(--ease),
+              clip-path 0.25s var(--ease) 0.1s,
+              padding 0.3s var(--ease);
 }
 .modo-card.selected .formato-inline {
   max-height: 120px;
-  opacity: 1;
   padding-bottom: 18px;
+  clip-path: inset(0 0 0% 0);
+  transition: max-height 0.35s var(--ease),
+              clip-path 0.25s var(--ease) 0.1s,
+              padding 0.3s var(--ease);
 }
 
 /* Pills de formato dentro de cada modo-card */
@@ -1817,3 +1827,176 @@ body::after {
   .idiomas-submodo-grid { grid-template-columns: 1fr; }
   .idioma-muestra-texto { font-size: 1.1rem; }
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   TEMAS ESPECIALES DE FONDO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Canvas oculto (no usado) */
+#bg-canvas { display: none; }
+
+/* Asegura que el contenido quede encima del fondo de banderas */
+[data-theme="flags"] .screen { position: relative; z-index: 1; }
+
+/* ── Tema: Banderas animadas (fondo blanco) ──────────────── */
+[data-theme="flags"] {
+  --bg-0:          #ffffff;
+  --bg-1:          #ffffff;
+  --bg-2:          #f0f4ff;
+  --bg-card:       rgba(255,255,255,.88);
+  --bg-card-hover: rgba(255,255,255,.96);
+  --text:          #1a1f3a;
+  --text-2:        #4a5280;
+  --text-muted:    #8b92b8;
+  --border:        rgba(99,110,255,.18);
+}
+
+.flags-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  flex-direction: column;
+  gap: 0;
+  pointer-events: none;
+}
+[data-theme="flags"] .flags-bg { display: flex; }
+
+.flags-row {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  gap: 8px;
+  flex-shrink: 0;
+  opacity: .15;
+  /* GPU layer para animación sin glitch */
+  will-change: transform;
+  /* Cada fila tiene su propia copia duplicada — el loop es exacto al 50% */
+}
+.flags-row img {
+  height: 36px;
+  width: 54px;          /* ancho fijo para que el 50% sea siempre exacto */
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: block;
+}
+/* Filas impares: izquierda → derecha */
+.flags-row:nth-child(odd) {
+  animation: flagsLTR 80s linear infinite;
+}
+/* Filas pares: derecha → izquierda */
+.flags-row:nth-child(even) {
+  animation: flagsRTL 70s linear infinite;
+}
+@keyframes flagsLTR {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes flagsRTL {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Menú de opciones extra ─────────────────────────────── */
+.options-menu-wrap {
+  position: relative;
+}
+.options-menu-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--t-fast);
+  backdrop-filter: blur(8px);
+}
+.options-menu-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(255,255,255,.2);
+  transform: scale(1.05);
+}
+.options-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+  min-width: 230px;
+  z-index: 200;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px) scale(.97);
+  pointer-events: none;
+  transition: opacity .2s var(--ease), transform .2s var(--ease);
+}
+.options-dropdown.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+.options-section-label {
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text-muted);
+  padding: 10px 14px 4px;
+}
+.options-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: var(--ff-body);
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background var(--t-fast);
+  text-align: left;
+}
+.options-item:hover { background: var(--bg-2); }
+.options-item .opt-icon { font-size: 1.05rem; width: 22px; text-align: center; }
+.options-item .opt-check {
+  margin-left: auto;
+  font-size: .8rem;
+  color: var(--primary);
+  opacity: 0;
+}
+.options-item.active .opt-check { opacity: 1; }
+.options-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+/* Submenu de temas */
+.theme-submenu {
+  display: none;
+  flex-direction: column;
+}
+.theme-submenu.open { display: flex; }
+.options-item.theme-toggle-btn .opt-arrow {
+  margin-left: auto;
+  font-size: .7rem;
+  color: var(--text-muted);
+  transition: transform .2s;
+}
+.options-item.theme-toggle-btn.open .opt-arrow { transform: rotate(90deg); }
+
+/* Submenu idioma */
+.lang-item .lang-flag { font-size: 1rem; }
