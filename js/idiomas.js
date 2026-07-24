@@ -733,6 +733,10 @@ function mostrarResultadosIdiomas() {
   idiomasJuego.detenerTimer();
   detenerAudio();
   const resumen = idiomasJuego.obtenerResumen();
+  // Guardar subModo para que el botón "jugar de nuevo" pueda relanzarlo
+  if (typeof _ultimoSubModoIdiomas !== 'undefined') {
+    _ultimoSubModoIdiomas = idiomasJuego.subModo;
+  }
   actualizarEstadisticas(resumen);
   mostrarResultadosConResumen(resumen);
 }

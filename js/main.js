@@ -25,8 +25,8 @@ function abrirMenu() {
 let soundMuted = localStorage.getItem('mq_muted') === 'true';
 
 const sounds = {
-  correct: new Audio('https://assets.mixkit.co/active_storage/sfx/2014/2014-preview.mp3'),
-  wrong:   new Audio('https://assets.mixkit.co/active_storage/sfx/2955/2955-preview.mp3'),
+  correct: new Audio('sonido_de_acierto.mp3'),
+  wrong:   new Audio('sonido_de_fallo.mp3'),
   tick:    new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'),
   timeout: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'),
   victory: new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3'),
@@ -826,8 +826,18 @@ $('btn-guardar').addEventListener('click', async () => {
 });
 
 // ── Botones de resultados ──────────────────────────────────
+let _ultimoSubModoIdiomas = null; // guarda el subModo del último juego de idiomas
+
 $('btn-jugar-de-nuevo').addEventListener('click', () => {
-  iniciarJuego(juegoActual.modo, juegoActual.region);
+  // Si el último juego fue de idiomas, relanzar idiomas
+  if (_ultimoSubModoIdiomas) {
+    iniciarJuegoIdiomas(_ultimoSubModoIdiomas);
+  } else if (juegoActual) {
+    iniciarJuego(juegoActual.modo, juegoActual.region);
+  } else {
+    // Fallback: volver al menú
+    abrirMenu();
+  }
 });
 
 $('btn-cambiar-modo').addEventListener('click', () => {
@@ -1122,6 +1132,65 @@ const I18N = {
     stat_aciertos: 'Aciertos',
     stat_mejor: 'Mejor',
     stat_racha: 'Racha',
+    // Wordle widget
+    streak_current: 'Racha actual',
+    streak_max: 'Racha máxima 🔥',
+    played: 'Jugados',
+    won: 'Ganados',
+    // Resultados - stats
+    stat_precision: 'Precisión',
+    stat_racha_max: 'Racha máxima 🔥',
+    stat_mejor_puntaje: 'Mejor puntaje',
+    // Guardar
+    save_title: '💾 Guardar en clasificación',
+    save_subtitle: '¡Introduce tu nombre para guardar tu puntaje!',
+    name_placeholder: 'Tu nombre aquí...',
+    save_btn_txt: 'Guardar puntaje',
+    play_again_txt: '🔄 Jugar de nuevo',
+    back_menu_txt: '🏠 Volver al menú',
+    see_ranking: '🏆 Ver clasificación',
+    // Atlas
+    atlas_title: '🌍 Atlas de Geografía',
+    atlas_search: 'Buscar por país o capital...',
+    atlas_filter_all: 'Todas las regiones',
+    atlas_filter_norte: '🌎 América del Norte',
+    atlas_filter_sur: '🌎 América del Sur',
+    atlas_filter_europa: '🌍 Europa',
+    atlas_filter_asia: '🌏 Asia',
+    atlas_filter_africa: '🌍 África',
+    atlas_filter_oceania: '🌏 Oceanía',
+    atlas_back: '← Volver',
+    // Ranking modal
+    ranking_title: '🏆 Clasificación Global',
+    ranking_all: 'Todos',
+    ranking_empty: '¡Aún no hay registros! Sé el primero.',
+    ranking_loading: 'Cargando clasificación...',
+    // GeoWordle pantalla
+    wordle_subtitle: 'Adivina el país del día',
+    wordle_back: '🏠 Volver',
+    wordle_stats_btn: '📊 Stats',
+    wordle_attempts: 'intentos restantes',
+    wordle_attempt_1: '1 intento restante',
+    wordle_hint_continent: 'Continente',
+    wordle_hint_pop: 'Población',
+    wordle_hint_capital: 'Capital',
+    wordle_hint_neighbors: 'Países vecinos',
+    wordle_input_ph: 'Escribe un país...',
+    wordle_guess_btn: 'Adivinar →',
+    wordle_next: '🕐 Próximo país en:',
+    wordle_wrong: '✗ Incorrecto',
+    // Idiomas modal
+    idiomas_title: 'Modo Idiomas',
+    idiomas_sub: '¿Cómo quieres identificar el idioma?',
+    idiomas_writing: 'Escritura',
+    idiomas_writing_desc: 'Lee un fragmento de texto y adivina en qué idioma está escrito',
+    idiomas_audio: 'Audio',
+    idiomas_audio_desc: 'Escucha un fragmento de voz y adivina qué idioma es',
+    // Juego
+    game_exit: '✕',
+    toasts_correct: '¡Correcto!',
+    toasts_wrong: 'Incorrecto',
+    toasts_timeout: '¡Tiempo!',
   },
   en: {
     nav: 'Navigation',
@@ -1182,10 +1251,76 @@ const I18N = {
     stat_aciertos: 'Correct',
     stat_mejor: 'Best',
     stat_racha: 'Streak',
+    // Wordle widget
+    streak_current: 'Current streak',
+    streak_max: 'Best streak 🔥',
+    played: 'Played',
+    won: 'Won',
+    // Results stats
+    stat_precision: 'Accuracy',
+    stat_racha_max: 'Best streak 🔥',
+    stat_mejor_puntaje: 'Best score',
+    // Save
+    save_title: '💾 Save to leaderboard',
+    save_subtitle: 'Enter your name to save your score!',
+    name_placeholder: 'Your name here...',
+    save_btn_txt: 'Save score',
+    play_again_txt: '🔄 Play again',
+    back_menu_txt: '🏠 Back to menu',
+    see_ranking: '🏆 See leaderboard',
+    // Atlas
+    atlas_title: '🌍 Geography Atlas',
+    atlas_search: 'Search by country or capital...',
+    atlas_filter_all: 'All regions',
+    atlas_filter_norte: '🌎 North America',
+    atlas_filter_sur: '🌎 South America',
+    atlas_filter_europa: '🌍 Europe',
+    atlas_filter_asia: '🌏 Asia',
+    atlas_filter_africa: '🌍 Africa',
+    atlas_filter_oceania: '🌏 Oceania',
+    atlas_back: '← Back',
+    // Ranking modal
+    ranking_title: '🏆 Global Leaderboard',
+    ranking_all: 'All',
+    ranking_empty: 'No records yet! Be the first.',
+    ranking_loading: 'Loading leaderboard...',
+    // GeoWordle screen
+    wordle_subtitle: 'Guess the country of the day',
+    wordle_back: '🏠 Back',
+    wordle_stats_btn: '📊 Stats',
+    wordle_attempts: 'attempts remaining',
+    wordle_attempt_1: '1 attempt remaining',
+    wordle_hint_continent: 'Continent',
+    wordle_hint_pop: 'Population',
+    wordle_hint_capital: 'Capital',
+    wordle_hint_neighbors: 'Neighboring countries',
+    wordle_input_ph: 'Type a country...',
+    wordle_guess_btn: 'Guess →',
+    wordle_next: '🕐 Next country in:',
+    wordle_wrong: '✗ Incorrect',
+    // Languages modal
+    idiomas_title: 'Languages Mode',
+    idiomas_sub: 'How do you want to identify the language?',
+    idiomas_writing: 'Writing',
+    idiomas_writing_desc: 'Read a text excerpt and guess which language it is written in',
+    idiomas_audio: 'Audio',
+    idiomas_audio_desc: 'Listen to a voice clip and guess which language it is',
+    // Game
+    game_exit: '✕',
+    toasts_correct: 'Correct!',
+    toasts_wrong: 'Incorrect',
+    toasts_timeout: "Time's up!",
   }
 };
 
-let currentLang = localStorage.getItem('mq_lang') || 'es';
+// Detectar idioma del navegador si no hay preferencia guardada
+function detectarIdioma() {
+  const saved = localStorage.getItem('mq_lang');
+  if (saved) return saved;
+  const navLang = (navigator.language || navigator.userLanguage || 'es').toLowerCase();
+  return navLang.startsWith('en') ? 'en' : 'es';
+}
+let currentLang = detectarIdioma();
 
 function t(key) {
   return I18N[currentLang]?.[key] || I18N['es'][key] || key;
@@ -1258,6 +1393,80 @@ function aplicarIdioma() {
   // Botones de resultados
   const btnPlayAgain = $('btn-play-again'); if (btnPlayAgain) btnPlayAgain.textContent = t('play_again');
   const btnMenu2 = $('btn-menu-results'); if (btnMenu2) btnMenu2.textContent = t('back_menu');
+
+  // Placeholders
+  const inp = $('input-nombre');
+  if (inp) inp.placeholder = t('name_placeholder');
+  const atlasSearch = $('atlas-search');
+  if (atlasSearch) atlasSearch.placeholder = t('atlas_search');
+  const wordleInput = $('wordle-input');
+  if (wordleInput) wordleInput.placeholder = t('wordle_input_ph');
+
+  // Botón adivinar wordle
+  const btnAdiv = $('btn-wordle-adivinar');
+  if (btnAdiv) btnAdiv.textContent = t('wordle_guess_btn');
+
+  // Subtítulo wordle
+  const wordleSub = document.querySelector('.wordle-subtitle');
+  if (wordleSub) wordleSub.textContent = t('wordle_subtitle');
+
+  // Botones wordle
+  const btnSalirW = $('btn-salir-wordle');
+  if (btnSalirW) btnSalirW.textContent = t('wordle_back');
+  const btnWStats = $('btn-wordle-stats');
+  if (btnWStats) btnWStats.textContent = t('wordle_stats_btn');
+
+  // Hints del wordle
+  const hintMap = {
+    'pista-label-continente': 'wordle_hint_continent',
+    'pista-label-poblacion':  'wordle_hint_pop',
+    'pista-label-capital':    'wordle_hint_capital',
+    'pista-label-vecinos':    'wordle_hint_neighbors',
+  };
+  Object.entries(hintMap).forEach(([id, key]) => {
+    const el = $(id); if (el) el.textContent = t(key);
+  });
+
+  // Atlas select options
+  const atlasSelect = $('atlas-filter-region');
+  if (atlasSelect) {
+    const optMap = {
+      '':               t('atlas_filter_all'),
+      'america_norte':  t('atlas_filter_norte'),
+      'america_sur':    t('atlas_filter_sur'),
+      'europa':         t('atlas_filter_europa'),
+      'asia':           t('atlas_filter_asia'),
+      'africa':         t('atlas_filter_africa'),
+      'oceania':        t('atlas_filter_oceania'),
+    };
+    Array.from(atlasSelect.options).forEach(opt => {
+      if (optMap[opt.value] !== undefined) opt.text = optMap[opt.value];
+    });
+  }
+
+  // Modal de idiomas
+  const idiomasModalTitulo = document.querySelector('.idiomas-modal-titulo');
+  if (idiomasModalTitulo) idiomasModalTitulo.textContent = t('idiomas_title');
+  const idiomasModalSub = document.querySelector('.idiomas-modal-sub');
+  if (idiomasModalSub) idiomasModalSub.textContent = t('idiomas_sub');
+
+  // Ranking modal título
+  const rankingTitulo = document.querySelector('#ranking-modal .modal-header h2');
+  if (rankingTitulo) rankingTitulo.textContent = t('ranking_title');
+
+  // Tabs ranking
+  document.querySelectorAll('.tab-btn[data-tab="todos"]').forEach(el => {
+    el.textContent = t('ranking_all');
+  });
+
+  // Countdown label wordle
+  const proxLabel = document.querySelector('.wordle-proximo');
+  if (proxLabel) {
+    const countdown = $('wordle-countdown');
+    const time = countdown ? countdown.textContent : '--:--:--';
+    proxLabel.innerHTML = `${t('wordle_next')} <strong id="wordle-countdown">${time}</strong>`;
+  }
+
   // Marca idioma activo en el menú
   document.querySelectorAll('.lang-item').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.lang === currentLang);
@@ -1489,7 +1698,7 @@ document.addEventListener('DOMContentLoaded', () => {
   aplicarTema(savedTheme);
 
   // Restaurar idioma
-  currentLang = localStorage.getItem('mq_lang') || 'es';
+  currentLang = detectarIdioma();
   aplicarIdioma();
 
   inicializarOptionsMenu();

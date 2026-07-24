@@ -135,7 +135,7 @@
 
       <!-- Progreso por región -->
       <div class="side-panel glass">
-        <div class="panel-header">🗺️ Tu Progreso</div>
+        <div class="panel-header" data-i18n="your_progress">🗺️ Tu Progreso</div>
         <div class="region-progress-list" id="region-progress-list">
           <!-- Se genera dinámicamente -->
         </div>
@@ -143,23 +143,23 @@
 
       <!-- Racha GeoWordle -->
       <div class="side-panel glass">
-        <div class="panel-header">🌍 GeoWordle</div>
+        <div class="panel-header" data-i18n="geowordle_lbl">🌍 GeoWordle</div>
         <div class="wordle-racha-widget">
           <div class="wordle-racha-widget-item">
             <div class="wordle-racha-widget-val" id="ww-racha">0</div>
-            <div class="wordle-racha-widget-lbl">Racha actual</div>
+            <div class="wordle-racha-widget-lbl" data-i18n="streak_current">Racha actual</div>
           </div>
           <div class="wordle-racha-widget-item">
             <div class="wordle-racha-widget-val" id="ww-max">0</div>
-            <div class="wordle-racha-widget-lbl">Racha máxima</div>
+            <div class="wordle-racha-widget-lbl" data-i18n="streak_max">Racha máxima</div>
           </div>
           <div class="wordle-racha-widget-item">
             <div class="wordle-racha-widget-val" id="ww-jugados">0</div>
-            <div class="wordle-racha-widget-lbl">Jugados</div>
+            <div class="wordle-racha-widget-lbl" data-i18n="played">Jugados</div>
           </div>
           <div class="wordle-racha-widget-item">
             <div class="wordle-racha-widget-val" id="ww-ganados">0%</div>
-            <div class="wordle-racha-widget-lbl">Ganados</div>
+            <div class="wordle-racha-widget-lbl" data-i18n="won">Ganados</div>
           </div>
         </div>
         <div id="ww-estado-hoy" class="wordle-jugado-hoy pendiente" role="button" tabindex="0">
@@ -298,7 +298,7 @@
     <div class="menu-right-col">
       <!-- Panel País del Día -->
       <div class="side-panel glass" id="panel-pais-dia">
-        <div class="panel-header">🌟 País del Día</div>
+        <div class="panel-header" data-i18n="country_day">🌟 País del Día</div>
         <div class="panel-body text-center" style="display:flex; flex-direction:column; align-items:center;">
           <img id="pd-bandera" style="width: 80px; height: auto; border-radius: 4px; box-shadow: var(--shadow); margin-bottom: 12px; margin-top:10px;" alt="Bandera del país del día" />
           <div id="pd-nombre" style="font-family: var(--ff-head); font-weight: bold; font-size: 1.3rem;">Cargando...</div>
@@ -309,7 +309,7 @@
 
       <!-- Panel Curiosidades -->
       <div class="side-panel glass" id="panel-curiosidades">
-        <div class="panel-header">💡 ¿Sabías que...?</div>
+        <div class="panel-header" data-i18n="did_you_know">💡 ¿Sabías que...?</div>
         <div class="panel-body" style="font-style: italic; color: var(--text-2); min-height: 80px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.5;">
           <span id="curiosidad-texto">Cargando curiosidad...</span>
         </div>
@@ -317,19 +317,19 @@
 
       <!-- Panel Stats y Mini Ranking -->
       <div class="side-panel glass">
-        <div class="panel-header" style="margin-bottom:12px;">🏆 Top 3 Clasificación</div>
+        <div class="panel-header" style="margin-bottom:12px;" data-i18n="top3">🏆 Top 3 Clasificación</div>
         <div id="mini-ranking-list" style="display:flex; flex-direction:column; gap: 8px;">
           <div style="color: var(--text-muted); font-size: 0.9rem; text-align:center; padding: 10px 0;">Nadie ha jugado aún. ¡Sé el primero!</div>
         </div>
 
-        <div class="panel-header" style="margin-top: 24px; margin-bottom:12px;">📈 Tus Estadísticas Rápidas</div>
+        <div class="panel-header" style="margin-top: 24px; margin-bottom:12px;" data-i18n="your_stats">📈 Tus Estadísticas Rápidas</div>
         <div class="quick-stats-mini" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div style="background:var(--bg-2); padding:10px; border-radius:var(--r-md); text-align:center;">
             <div class="qstat-lbl" style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Partidas</div>
             <div class="qstat-val-mini" id="qs-partidas" style="font-weight:bold; color:var(--primary); font-size:1.2rem;">0</div>
           </div>
           <div style="background:var(--bg-2); padding:10px; border-radius:var(--r-md); text-align:center;">
-            <div class="qstat-lbl" style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;">Aciertos</div>
+            <div class="qstat-lbl" style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase;" data-i18n="stat_aciertos">Aciertos</div>
             <div class="qstat-val-mini" id="qs-aciertos" style="font-weight:bold; color:var(--primary); font-size:1.2rem;">0</div>
           </div>
           <div style="background:var(--bg-2); padding:10px; border-radius:var(--r-md); text-align:center;">
@@ -417,36 +417,36 @@
   <div class="stats-grid" role="list" aria-label="Estadísticas de la partida">
     <div class="stat-card" role="listitem">
       <div id="res-stat-aciertos" class="stat-val">0/10</div>
-      <div class="stat-lbl">Aciertos</div>
+      <div class="stat-lbl" data-i18n="stat_aciertos">Aciertos</div>
     </div>
     <div class="stat-card" role="listitem">
       <div id="res-stat-pct" class="stat-val">0%</div>
-      <div class="stat-lbl">Precisión</div>
+      <div class="stat-lbl" data-i18n="stat_precision">Precisión</div>
     </div>
     <div class="stat-card" role="listitem">
       <div id="res-stat-racha" class="stat-val">0</div>
-      <div class="stat-lbl">Racha máxima 🔥</div>
+      <div class="stat-lbl" data-i18n="stat_racha_max">Racha máxima 🔥</div>
     </div>
     <div class="stat-card" role="listitem">
       <div id="res-stat-puntaje" class="stat-val">0</div>
-      <div class="stat-lbl">Mejor puntaje</div>
+      <div class="stat-lbl" data-i18n="stat_mejor_puntaje">Mejor puntaje</div>
     </div>
   </div>
 
   <!-- Guardar en ranking -->
   <div class="save-score-form glass" aria-label="Guardar puntuación">
-    <h3>💾 Guardar en clasificación</h3>
-    <p style="font-size:.85rem;color:var(--text-2)">¡Introduce tu nombre para guardar tu puntaje!</p>
+    <h3 data-i18n="save_title">💾 Guardar en clasificación</h3>
+    <p style="font-size:.85rem;color:var(--text-2)" data-i18n="save_subtitle">¡Introduce tu nombre para guardar tu puntaje!</p>
     <input
       id="input-nombre"
       type="text"
-      placeholder="Tu nombre aquí..."
+      placeholder="Tu nombre aquí..." data-i18n-placeholder="name_placeholder"
       maxlength="20"
       autocomplete="off"
       aria-label="Tu nombre"
     />
     <button id="btn-guardar" class="btn btn-primary" aria-label="Guardar puntaje">
-      Guardar puntaje ✨
+      <span data-i18n="save_btn_txt">Guardar puntaje</span> ✨
     </button>
     <p id="msg-guardado" style="display:none;color:var(--success);font-size:.9rem;text-align:center">
       ✅ ¡Puntaje guardado con éxito!
@@ -469,7 +469,7 @@
   <!-- Acciones -->
   <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
     <button id="btn-jugar-de-nuevo" class="btn btn-primary" aria-label="Jugar de nuevo con el mismo modo">
-      🔄 Jugar de nuevo
+      <span data-i18n="play_again_txt">🔄 Jugar de nuevo</span>
     </button>
     <button id="btn-ranking-results" class="btn btn-ghost" aria-label="Ver tabla de clasificación">
       🏆 Clasificación
@@ -487,12 +487,12 @@
 <section id="screen-wordle" class="screen" role="main" aria-label="Wordle de países">
 
   <header class="wordle-header">
-    <button id="btn-salir-wordle" class="btn btn-ghost btn-sm">🏠 Volver</button>
+    <button id="btn-salir-wordle" class="btn btn-ghost btn-sm" data-i18n="wordle_back">🏠 Volver</button>
     <div class="wordle-title-wrap">
       <h1 class="wordle-title">🌍 GeoWordle</h1>
-      <p class="wordle-subtitle">Adivina el país del día</p>
+      <p class="wordle-subtitle" data-i18n="wordle_subtitle">Adivina el país del día</p>
     </div>
-    <button id="btn-wordle-stats" class="btn btn-ghost btn-sm">📊 Stats</button>
+    <button id="btn-wordle-stats" class="btn btn-ghost btn-sm" data-i18n="wordle_stats_btn">📊 Stats</button>
   </header>
 
   <!-- Info de intentos -->
@@ -511,25 +511,25 @@
     <!-- Pista 0: Continente — siempre visible desde el inicio -->
     <div class="pista-card visible" id="pista-continente">
       <div class="pista-icon">🌍</div>
-      <div class="pista-label">Continente</div>
+      <div class="pista-label" id="pista-label-continente" data-i18n="wordle_hint_continent">Continente</div>
       <div class="pista-valor" id="pista-val-continente">?</div>
     </div>
     <!-- Pista 1: Población — se revela tras 1er fallo -->
     <div class="pista-card" id="pista-poblacion">
       <div class="pista-icon">👥</div>
-      <div class="pista-label">Población</div>
+      <div class="pista-label" id="pista-label-poblacion" data-i18n="wordle_hint_pop">Población</div>
       <div class="pista-valor" id="pista-val-poblacion">?</div>
     </div>
     <!-- Pista 2: Capital — se revela tras 2do fallo -->
     <div class="pista-card" id="pista-capital">
       <div class="pista-icon">🏙️</div>
-      <div class="pista-label">Capital</div>
+      <div class="pista-label" id="pista-label-capital" data-i18n="wordle_hint_capital">Capital</div>
       <div class="pista-valor" id="pista-val-capital">?</div>
     </div>
     <!-- Pista 3: Vecinos — se revela tras 3er fallo -->
     <div class="pista-card" id="pista-vecinos">
       <div class="pista-icon">🗺️</div>
-      <div class="pista-label">Países vecinos</div>
+      <div class="pista-label" id="pista-label-vecinos" data-i18n="wordle_hint_neighbors">Países vecinos</div>
       <div class="pista-valor" id="pista-val-vecinos">?</div>
     </div>
   </div>
@@ -546,7 +546,7 @@
         aria-label="Nombre del país"
         aria-autocomplete="list"
       />
-      <button id="btn-wordle-adivinar" class="btn btn-primary">Adivinar →</button>
+      <button id="btn-wordle-adivinar" class="btn btn-primary" data-i18n="wordle_guess_btn">Adivinar →</button>
     </div>
     <ul id="wordle-autocomplete" class="wordle-autocomplete" role="listbox" aria-label="Sugerencias"></ul>
   </div>
@@ -577,7 +577,7 @@
       </div>
       <div class="wordle-racha-item">
         <div class="wordle-racha-val" id="wstat-max">0</div>
-        <div class="wordle-racha-lbl">Racha máxima</div>
+        <div class="wordle-racha-lbl" data-i18n="streak_max">Racha máxima</div>
       </div>
     </div>
     <p class="wordle-proximo">🕐 Próximo país en: <strong id="wordle-countdown">--:--:--</strong></p>
@@ -602,7 +602,7 @@
   <div class="atlas-controls glass">
     <div class="search-input-wrap">
       <span class="search-icon">🔍</span>
-      <input type="text" id="atlas-search" placeholder="Buscar por país o capital..." aria-label="Buscar país o capital" />
+      <input type="text" id="atlas-search" placeholder="Buscar por país o capital..." data-i18n-placeholder="atlas_search" aria-label="Buscar país o capital" />
     </div>
     <div class="filter-wrap">
       <select id="atlas-filter-region" class="atlas-select" aria-label="Filtrar por región">
