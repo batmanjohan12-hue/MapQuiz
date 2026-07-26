@@ -255,6 +255,25 @@ function refrescarMenu() {
 /** Alias de compatibilidad. */
 function inicializarMenu() { refrescarMenu(); }
 
+/** Inicializa los acordeones móviles de las columnas laterales. */
+function inicializarAcordeonesMovil() {
+  [
+    { btn: 'acc-left-btn',  body: 'acc-left-body'  },
+    { btn: 'acc-right-btn', body: 'acc-right-body' },
+  ].forEach(({ btn, body }) => {
+    const btnEl  = $(btn);
+    const bodyEl = $(body);
+    if (!btnEl || !bodyEl) return;
+
+    btnEl.addEventListener('click', () => {
+      const isOpen = bodyEl.classList.contains('open');
+      bodyEl.classList.toggle('open', !isOpen);
+      btnEl.classList.toggle('open', !isOpen);
+      btnEl.setAttribute('aria-expanded', String(!isOpen));
+    });
+  });
+}
+
 /** Registra todos los listeners del menú UNA SOLA VEZ. */
 function inicializarMenuListeners() {
   document.querySelectorAll('.modo-card').forEach(card => {
@@ -1040,6 +1059,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   inicializarMenuListeners();
+  inicializarAcordeonesMovil();
   if (typeof inicializarWordleListeners === 'function') inicializarWordleListeners();
   if (typeof inicializarIdiomasListeners === 'function') inicializarIdiomasListeners();
 

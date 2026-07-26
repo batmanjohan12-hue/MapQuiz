@@ -133,40 +133,51 @@
     <!-- COLUMNA IZQUIERDA — Progreso + Wordle -->
     <div class="menu-left-col">
 
-      <!-- Progreso por región -->
-      <div class="side-panel glass">
-        <div class="panel-header" data-i18n="your_progress">🗺️ Tu Progreso</div>
-        <div class="region-progress-list" id="region-progress-list">
-          <!-- Se genera dinámicamente -->
-        </div>
-      </div>
+      <!-- Botón acordeón (solo móvil) -->
+      <button class="mobile-accordion-trigger" id="acc-left-btn" aria-expanded="false">
+        <span>📊 Tu progreso y GeoWordle</span>
+        <span class="acc-chevron">▼</span>
+      </button>
 
-      <!-- Racha GeoWordle -->
-      <div class="side-panel glass">
-        <div class="panel-header" data-i18n="geowordle_lbl">🌍 GeoWordle</div>
-        <div class="wordle-racha-widget">
-          <div class="wordle-racha-widget-item">
-            <div class="wordle-racha-widget-val" id="ww-racha">0</div>
-            <div class="wordle-racha-widget-lbl" data-i18n="streak_current">Racha actual</div>
-          </div>
-          <div class="wordle-racha-widget-item">
-            <div class="wordle-racha-widget-val" id="ww-max">0</div>
-            <div class="wordle-racha-widget-lbl" data-i18n="streak_max">Racha máxima</div>
-          </div>
-          <div class="wordle-racha-widget-item">
-            <div class="wordle-racha-widget-val" id="ww-jugados">0</div>
-            <div class="wordle-racha-widget-lbl" data-i18n="played">Jugados</div>
-          </div>
-          <div class="wordle-racha-widget-item">
-            <div class="wordle-racha-widget-val" id="ww-ganados">0%</div>
-            <div class="wordle-racha-widget-lbl" data-i18n="won">Ganados</div>
-          </div>
-        </div>
-        <div id="ww-estado-hoy" class="wordle-jugado-hoy pendiente" role="button" tabindex="0">
-          🎯 Jugar GeoWordle de hoy
-        </div>
-      </div>
+      <!-- Contenido del acordeón -->
+      <div class="mobile-accordion-body" id="acc-left-body">
 
+        <!-- Progreso por región -->
+        <div class="side-panel glass">
+          <div class="panel-header" data-i18n="your_progress">🗺️ Tu Progreso</div>
+          <div class="region-progress-list" id="region-progress-list">
+            <!-- Se genera dinámicamente -->
+          </div>
+        </div>
+
+        <!-- Racha GeoWordle -->
+        <div class="side-panel glass">
+          <div class="panel-header" data-i18n="geowordle_lbl">🌍 GeoWordle</div>
+          <div class="wordle-racha-widget">
+            <div class="wordle-racha-widget-item">
+              <div class="wordle-racha-widget-val" id="ww-racha">0</div>
+              <div class="wordle-racha-widget-lbl" data-i18n="streak_current">Racha actual</div>
+            </div>
+            <div class="wordle-racha-widget-item">
+              <div class="wordle-racha-widget-val" id="ww-max">0</div>
+              <div class="wordle-racha-widget-lbl" data-i18n="streak_max">Racha máxima</div>
+            </div>
+            <div class="wordle-racha-widget-item">
+              <div class="wordle-racha-widget-val" id="ww-jugados">0</div>
+              <div class="wordle-racha-widget-lbl" data-i18n="played">Jugados</div>
+            </div>
+            <div class="wordle-racha-widget-item">
+              <div class="wordle-racha-widget-val" id="ww-ganados">0%</div>
+              <div class="wordle-racha-widget-lbl" data-i18n="won">Ganados</div>
+            </div>
+          </div>
+          <div id="ww-estado-hoy" class="wordle-jugado-hoy pendiente" role="button" tabindex="0">
+            🎯 Jugar GeoWordle de hoy
+          </div>
+        </div>
+
+      </div>
+      </div><!-- fin acc-right-body -->
     </div>
 
     <!-- COLUMNA CENTRAL -->
@@ -296,6 +307,15 @@
 
     <!-- COLUMNA DERECHA -->
     <div class="menu-right-col">
+
+      <!-- Botón acordeón (solo móvil) -->
+      <button class="mobile-accordion-trigger" id="acc-right-btn" aria-expanded="false">
+        <span>🌍 País del Día · Top 3 · Stats</span>
+        <span class="acc-chevron">▼</span>
+      </button>
+
+      <!-- Contenido del acordeón -->
+      <div class="mobile-accordion-body" id="acc-right-body">
       <!-- Panel País del Día -->
       <div class="side-panel glass" id="panel-pais-dia">
         <div class="panel-header" data-i18n="country_day">🌟 País del Día</div>

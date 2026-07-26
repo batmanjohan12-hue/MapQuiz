@@ -246,15 +246,18 @@ body::after {
 }
 
 .menu-left-col {
-  display: none; /* oculta en móvil */
+  display: flex;
   flex-direction: column;
   gap: 16px;
+  order: 2; /* debajo del menú central en móvil */
+  width: 100%;
 }
 @media (min-width: 960px) {
   .menu-left-col {
-    display: flex;
+    order: 0;
     position: sticky;
     top: 24px;
+    width: auto;
   }
 }
 
@@ -264,15 +267,19 @@ body::after {
   gap: 40px;
   align-items: center;
   min-width: 0;
+  order: 1;
 }
 
 .menu-right-col {
-  display: none; /* oculta en móvil */
+  display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
+  order: 3; /* debajo del left-col en móvil */
+  width: 100%;
 }
 @media (min-width: 960px) {
   .menu-right-col {
+    gap: 20px;
     display: flex;
     position: sticky;
     top: 24px;
@@ -1384,6 +1391,58 @@ body::after {
 }
 .wordle-jugado-hoy.pendiente:hover {
   background: rgba(99,110,255,.15);
+}
+
+/* ── Acordeón móvil para paneles laterales ───────────────── */
+.mobile-accordion-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  font-family: var(--ff-head);
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--text);
+  transition: var(--t-fast);
+  gap: 10px;
+}
+.mobile-accordion-trigger:hover {
+  border-color: var(--primary);
+  background: rgba(99,110,255,.06);
+}
+.mobile-accordion-trigger .acc-chevron {
+  font-size: .75rem;
+  color: var(--text-muted);
+  transition: transform var(--t-mid);
+  flex-shrink: 0;
+}
+.mobile-accordion-trigger.open .acc-chevron {
+  transform: rotate(180deg);
+}
+.mobile-accordion-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.mobile-accordion-body.open {
+  max-height: 1000px;
+}
+
+/* En escritorio ocultar el botón acordeón y mostrar contenido siempre */
+@media (min-width: 960px) {
+  .mobile-accordion-trigger { display: none; }
+  .mobile-accordion-body {
+    max-height: none !important;
+    overflow: visible;
+  }
 }
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    GEOWORDLE
