@@ -875,6 +875,29 @@ body::after {
   background: rgba(239,68,68,.08);
   transform: scale(1.1);
 }
+/* Variante para botones de cerrar en flujo normal (no absoluto) */
+.modal-close--inline {
+  position: static;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-2);
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  font-size: .9rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--t-fast);
+  flex-shrink: 0;
+}
+.modal-close--inline:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: rgba(239,68,68,.08);
+  transform: scale(1.1);
+}
 
 .modal-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -1581,6 +1604,23 @@ body::after {
   font-size: .95rem;
   flex: 1;
 }
+.wordle-intento-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.wordle-intento-dist {
+  font-size: .72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-full);
+  padding: 2px 8px;
+  white-space: nowrap;
+}
 .wordle-intento-badge {
   font-size: .75rem;
   color: var(--danger);
@@ -2000,3 +2040,47 @@ body::after {
 
 /* Submenu idioma */
 .lang-item .lang-flag { font-size: 1rem; }
+
+/* ── Nota explicativa de distancia en GeoWordle ─────────── */
+.wordle-dist-hint {
+  display: none; /* oculta hasta que hay intentos */
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  width: 100%;
+  animation: fadeIn var(--t-mid) both;
+}
+.wordle-dist-hint.visible { display: flex; }
+.wordle-dist-hint-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+.wordle-dist-hint-text {
+  font-size: .82rem;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.wordle-dist-hint-text strong {
+  display: block;
+  color: var(--text);
+  font-size: .85rem;
+  margin-bottom: 3px;
+}
+
+/* En pantallas anchas, flotante a la derecha del contenido wordle */
+@media (min-width: 1100px) {
+  #screen-wordle {
+    position: relative;
+  }
+  .wordle-dist-hint {
+    position: absolute;
+    left: calc(50% + 340px);
+    top: 220px;
+    width: 220px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wordle-dist-hint-icon { font-size: 1.8rem; }
+  .wordle-dist-hint-text { font-size: .8rem; }
+}

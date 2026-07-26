@@ -2,6 +2,29 @@
 //  MAP QUIZ — GeoWordle (modo país del día)
 // ============================================================
 
+// ── DISTANCIA ENTRE DOS PAÍSES (fórmula de Haversine) ────────
+function calcularDistanciaKm(pais1, pais2) {
+  const c1 = COORDENADAS[pais1];
+  const c2 = COORDENADAS[pais2];
+  if (!c1 || !c2) return null;
+
+  const R   = 6371; // Radio de la Tierra en km
+  const dLat = (c2[0] - c1[0]) * Math.PI / 180;
+  const dLon = (c2[1] - c1[1]) * Math.PI / 180;
+  const a   = Math.sin(dLat/2) * Math.sin(dLat/2)
+            + Math.cos(c1[0] * Math.PI/180) * Math.cos(c2[0] * Math.PI/180)
+            * Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c   = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return Math.round(R * c);
+}
+
+function formatearDistancia(km) {
+  if (km === null) return '';
+  if (km === 0)   return '📍 ¡Aquí!';
+  if (km < 1000)  return `📍 ${km.toLocaleString('es-ES')} km`;
+  return `📍 ${(km / 1000).toFixed(1).replace('.', ',')} mil km`;
+}
+
 const WORDLE_MAX_INTENTOS = 4;
 const WORDLE_STORAGE_KEY  = 'mq_wordle_estado';
 const WORDLE_STATS_KEY    = 'mq_wordle_stats';
@@ -167,6 +190,10 @@ function renderHistorial() {
   wordleEstado.intentosNombres.forEach(nombre => {
     const pais = PAISES.find(p => p.nombre.toLowerCase() === nombre.toLowerCase());
     const code = pais ? pais.code : null;
+    const paisDelDia  = getPaisDelDia();
+    const distanciaKm = calcularDistanciaKm(nombre, paisDelDia.nombre);
+    const distTxt     = formatearDistancia(distanciaKm);
+
     const item = document.createElement('div');
     item.className = 'wordle-intento-item';
     item.innerHTML = `
@@ -174,7 +201,10 @@ function renderHistorial() {
         ? `<img class="wordle-intento-flag" src="https://flagcdn.com/w40/${code}.png" alt="${nombre}">`
         : '<span style="width:32px"></span>'}
       <span class="wordle-intento-nombre">${nombre}</span>
-      <span class="wordle-intento-badge">✗ Incorrecto</span>
+      <div class="wordle-intento-meta">
+        ${distTxt ? `<span class="wordle-intento-dist">${distTxt}</span>` : ''}
+        <span class="wordle-intento-badge">✗ Incorrecto</span>
+      </div>
     `;
     cont.appendChild(item);
   });
@@ -283,6 +313,12 @@ function procesarIntento() {
   renderDots();
   renderHistorial();
 
+  // Mostrar nota explicativa de distancia tras el primer intento
+  const distHint = document.getElementById('wordle-dist-hint');
+  if (distHint && wordleEstado.intentosFallados === 1) {
+    distHint.classList.add('visible');
+  }
+
   // Revelar siguiente pista con delay para que se vea el historial primero
   setTimeout(() => renderPistas(), 300);
 
@@ -387,6 +423,8 @@ function inicializarWordle() {
   document.querySelectorAll('.pista-card').forEach(c => c.classList.remove('visible'));
   document.getElementById('wordle-historial').innerHTML = '';
   document.getElementById('wordle-resultado').style.display  = 'none';
+  const _dh = document.getElementById('wordle-dist-hint');
+  if (_dh) _dh.classList.remove('visible');
   document.getElementById('wordle-input-section').style.display = 'block';
   document.getElementById('wordle-input').value = '';
   document.getElementById('wordle-autocomplete').classList.remove('open');
@@ -411,6 +449,12 @@ function inicializarWordle() {
   renderDots();
   renderPistas();
   renderHistorial();
+
+  // Mostrar nota si ya hay intentos guardados
+  if (wordleEstado.intentosFallados > 0) {
+    const distHint = document.getElementById('wordle-dist-hint');
+    if (distHint) distHint.classList.add('visible');
+  }
 
   // Si ya terminó hoy, mostrar resultado directamente
   if (wordleEstado.terminado) {
