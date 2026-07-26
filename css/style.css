@@ -236,6 +236,11 @@ body::after {
   margin: 0 auto;
   padding: 0 16px;
 }
+/* En móvil: centro primero, luego laterales */
+.menu-left-col   { order: 2; }
+.menu-center-col { order: 1; }
+.menu-right-col  { order: 3; }
+
 @media (min-width: 960px) {
   .menu-grid-layout {
     display: grid;
@@ -243,18 +248,18 @@ body::after {
     gap: 28px;
     align-items: flex-start;
   }
+  /* En escritorio: grid ignora order, posición por HTML */
+  .menu-left-col, .menu-center-col, .menu-right-col { order: 0; }
 }
 
 .menu-left-col {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  order: 2; /* debajo del menú central en móvil */
   width: 100%;
 }
 @media (min-width: 960px) {
   .menu-left-col {
-    order: 0;
     position: sticky;
     top: 24px;
     width: auto;
@@ -267,14 +272,12 @@ body::after {
   gap: 40px;
   align-items: center;
   min-width: 0;
-  order: 1;
 }
 
 .menu-right-col {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  order: 3; /* debajo del left-col en móvil */
   width: 100%;
 }
 @media (min-width: 960px) {
