@@ -25,8 +25,8 @@ function abrirMenu() {
 let soundMuted = localStorage.getItem('mq_muted') === 'true';
 
 const sounds = {
-  correct: new Audio('sonido_de_acierto.mp3'),
-  wrong:   new Audio('sonido_de_fallo.mp3'),
+  correct: new Audio('audio/sonido_de_acierto.mp3'),
+  wrong:   new Audio('audio/sonido_de_fallo.mp3'),
   tick:    new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3'),
   timeout: new Audio('https://assets.mixkit.co/active_storage/sfx/2018/2018-preview.mp3'),
   victory: new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3'),
