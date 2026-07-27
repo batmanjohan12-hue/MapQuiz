@@ -399,19 +399,18 @@ body::after {
   padding: 0 20px 0;
   max-height: 0;
   overflow: hidden;
-  /* Ocultamos con clip-path: los pills son invisibles hasta que el contenedor se abre */
   clip-path: inset(0 0 100% 0);
-  transition: max-height 0.35s var(--ease),
-              clip-path 0.25s var(--ease) 0.1s,
-              padding 0.3s var(--ease);
+  transition: max-height 0.2s ease,
+              clip-path 0.18s ease 0.05s,
+              padding 0.2s ease;
 }
 .modo-card.selected .formato-inline {
-  max-height: 120px;
+  max-height: 220px; /* más alto para móvil donde los pills se wrappean */
   padding-bottom: 18px;
   clip-path: inset(0 0 0% 0);
-  transition: max-height 0.35s var(--ease),
-              clip-path 0.25s var(--ease) 0.1s,
-              padding 0.3s var(--ease);
+  transition: max-height 0.2s ease,
+              clip-path 0.18s ease 0.05s,
+              padding 0.2s ease;
 }
 
 /* Pills de formato dentro de cada modo-card */
@@ -2130,10 +2129,16 @@ body::after {
   margin-bottom: 3px;
 }
 
+/* En móvil: el hint aparece en flujo normal debajo del historial */
+.wordle-dist-hint {
+  margin-top: 4px;
+}
+
 /* En pantallas anchas, flotante a la derecha del contenido wordle */
 @media (min-width: 1100px) {
   #screen-wordle {
     position: relative;
+    overflow: visible;
   }
   .wordle-dist-hint {
     position: absolute;
@@ -2142,6 +2147,7 @@ body::after {
     width: 220px;
     flex-direction: column;
     gap: 8px;
+    margin-top: 0;
   }
   .wordle-dist-hint-icon { font-size: 1.8rem; }
   .wordle-dist-hint-text { font-size: .8rem; }
