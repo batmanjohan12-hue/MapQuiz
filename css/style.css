@@ -392,31 +392,24 @@ body::after {
 }
 
 /* Submenú de formatos inline */
-/* Contenedor grid para animación fluida sin max-height */
 .formato-inline-wrap {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.2s cubic-bezier(0.4,0,0.2,1);
-}
-.modo-card.selected .formato-inline-wrap {
-  grid-template-rows: 1fr;
+  overflow: hidden;
+  height: 0;
+  transition: height 0.2s cubic-bezier(0.4,0,0.2,1);
 }
 
 .formato-inline {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  padding: 0 20px;
-  overflow: hidden;
-  min-height: 0;
+  padding: 0 20px 18px;
   opacity: 0;
-  transition: opacity 0.15s ease 0.05s,
-              padding 0.2s ease;
-  padding-bottom: 0;
+  transition: opacity 0.15s ease 0.06s;
+  pointer-events: none;
 }
 .modo-card.selected .formato-inline {
   opacity: 1;
-  padding-bottom: 18px;
+  pointer-events: auto;
 }
 
 /* Pills de formato dentro de cada modo-card */
@@ -427,13 +420,15 @@ body::after {
   padding: 8px 16px;
   border-radius: var(--r-full);
   border: 1.5px solid var(--border);
-  background: var(--bg-2);
+  background: var(--bg-card); /* fondo sólido, no heredado de la card */
   color: var(--text);
   font-family: var(--ff-body);
   font-size: .85rem;
   font-weight: 500;
   cursor: pointer;
   transition: var(--t-fast);
+  position: relative; /* crea nuevo contexto, aísla del fondo de la card */
+  z-index: 1;
 }
 .formato-pill:hover {
   border-color: var(--primary);

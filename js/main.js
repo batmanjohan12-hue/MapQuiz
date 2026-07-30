@@ -119,12 +119,12 @@ function inicializarPanelesLaterales() {
 
   // 3. Mini Ranking — sincronizado con la misma fuente que la tabla de clasificación
   const list = $('mini-ranking-list');
-  list.innerHTML = `<div style="color:var(--text-muted);font-size:.85rem;text-align:center;padding:8px 0;">⏳ Cargando...</div>`;
+  list.innerHTML = `<div style="color:var(--text-muted);font-size:.85rem;text-align:center;padding:8px 0;">${t('loading')}</div>`;
   obtenerRankingAsync().then(datos => {
     list.innerHTML = '';
     const top3 = datos.slice(0, 3);
     if (top3.length === 0) {
-      list.innerHTML = `<div style="color:var(--text-muted);font-size:.9rem;text-align:center;padding:10px 0;">Nadie ha jugado aún. ¡Sé el primero!</div>`;
+      list.innerHTML = `<div style="color:var(--text-muted);font-size:.9rem;text-align:center;padding:10px 0;">${t('no_players')}</div>`;
     } else {
       top3.forEach((entry, i) => {
         const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
@@ -274,6 +274,30 @@ function inicializarAcordeonesMovil() {
   });
 }
 
+function setAlturaFormato(card, abrir) {
+  const wrap = card.querySelector('.formato-inline-wrap');
+  const inner = card.querySelector('.formato-inline');
+  if (!wrap || !inner) return;
+  if (abrir) {
+    // Medir altura real temporalmente
+    wrap.style.height = 'auto';
+    const h = inner.scrollHeight + 'px'; // padding ya incluido
+    wrap.style.height = '0';
+    // Forzar reflow
+    wrap.offsetHeight;
+    wrap.style.height = h;
+    // Al terminar la transición, dejar en auto para que se adapte
+    wrap.addEventListener('transitionend', () => {
+      wrap.style.height = 'auto';
+    }, { once: true });
+  } else {
+    // Fijar la altura actual antes de animar a 0
+    wrap.style.height = wrap.scrollHeight + 'px';
+    wrap.offsetHeight;
+    wrap.style.height = '0';
+  }
+}
+
 /** Registra todos los listeners del menú UNA SOLA VEZ. */
 function inicializarMenuListeners() {
   document.querySelectorAll('.modo-card').forEach(card => {
@@ -283,10 +307,17 @@ function inicializarMenuListeners() {
     if (!mainRow) return;
     mainRow.addEventListener('click', () => {
       const yaSeleccionada = card.classList.contains('selected');
-      document.querySelectorAll('.modo-card').forEach(c => c.classList.remove('selected'));
+      // Cerrar todas
+      document.querySelectorAll('.modo-card').forEach(c => {
+        if (c.classList.contains('selected')) {
+          c.classList.remove('selected');
+          setAlturaFormato(c, false);
+        }
+      });
       if (!yaSeleccionada) {
         card.classList.add('selected');
         modoSeleccionado = card.dataset.modo;
+        setAlturaFormato(card, true);
       }
     });
     card.querySelectorAll('.formato-pill').forEach(pill => {
@@ -717,7 +748,7 @@ function mostrarResultados() {
     const li = document.createElement('li');
     li.className = `history-item ${item.correcto ? 'correct' : 'wrong'}`;
     
-    const statusText = item.correcto ? '✓ Correcto' : '✗ Incorrecto';
+    const statusText = item.correcto ? t('correct_hist') : t('wrong_hist');
     
     let answersHTML = '';
     if (item.correcto) {
@@ -830,7 +861,7 @@ $('btn-guardar').addEventListener('click', async () => {
   }
 
   $('btn-guardar').disabled = true;
-  $('btn-guardar').textContent = 'Guardando... ⏳';
+  $('btn-guardar').textContent = t('saving');
 
   const pos = await guardarPuntaje({ nombre, ...r });
   puntajeGuardado = true;
@@ -838,9 +869,9 @@ $('btn-guardar').addEventListener('click', async () => {
   const msgEl = $('msg-guardado');
   msgEl.style.display = 'block';
   if (pos && pos <= 10) {
-    msgEl.innerHTML = `✅ ¡Guardado! Estás en el <strong>#${pos}</strong> del ranking global 🏆`;
+    msgEl.innerHTML = t('saved_pos').replace('{pos}', `<strong>#${pos}</strong>`);
   } else {
-    msgEl.innerHTML = `✅ ¡Puntaje guardado con éxito!`;
+    msgEl.innerHTML = t('saved_ok');
   }
 });
 
@@ -887,13 +918,13 @@ function renderizarRanking(modo) {
   });
 
   const tbody = $('ranking-tbody');
-  tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">⏳ Cargando clasificación...</td></tr>`;
+  tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">${t('rank_loading')}</td></tr>`;
 
   obtenerRankingAsync().then(ranking => {
     const datos = ranking.filter(e => e.modo === modo || modo === 'todos');
     tbody.innerHTML = '';
     if (!datos.length) {
-      tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">🌍 ¡Aún no hay registros!<br>Sé el primero en guardar tu puntaje.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" class="ranking-empty">${t('rank_empty')}</td></tr>`;
       return;
     }
     datos.slice(0, 10).forEach((entry, i) => {
@@ -988,7 +1019,7 @@ function renderizarAtlas() {
   }
   
   if (filtrados.length === 0) {
-    grid.innerHTML = '<div class="atlas-empty-msg">🔍 No se encontraron países que coincidan con la búsqueda.</div>';
+    grid.innerHTML = `<div class="atlas-empty-msg">${t('atlas_empty')}</div>`;
     return;
   }
   
@@ -1211,6 +1242,24 @@ const I18N = {
     toasts_correct: '¡Correcto!',
     toasts_wrong: 'Incorrecto',
     toasts_timeout: '¡Tiempo!',
+    rank_player: 'Jugador',
+    rank_points: 'Puntos',
+    rank_mode:   'Modo',
+    rank_date:   'Fecha',
+    dist_hint_title: '¿Qué significa la distancia?',
+    dist_hint_body:  'Es la distancia en línea recta desde el centro del país que elegiste hasta el país correcto. Cuanto más pequeña, ¡más cerca estás!',
+    loading:         '⏳ Cargando...',
+    no_players:      'Nadie ha jugado aún. ¡Sé el primero!',
+    rank_loading:    '⏳ Cargando clasificación...',
+    rank_empty:      '🌍 ¡Aún no hay registros!<br>Sé el primero en guardar tu puntaje.',
+    atlas_empty:     '🔍 No se encontraron países que coincidan.',
+    saving:          'Guardando... ⏳',
+    saved_pos:       '✅ ¡Guardado! Estás en el #{pos} del ranking global 🏆',
+    saved_ok:        '✅ ¡Puntaje guardado con éxito!',
+    correct_hist:    '✓ Correcto',
+    wrong_hist:      '✗ Incorrecto',
+    back_menu_game:  '🏠 Menú principal',
+    see_ranking_btn: '🏆 Clasificación',
   },
   en: {
     nav: 'Navigation',
@@ -1330,6 +1379,27 @@ const I18N = {
     toasts_correct: 'Correct!',
     toasts_wrong: 'Incorrect',
     toasts_timeout: "Time's up!",
+    // Ranking table
+    rank_player: 'Player',
+    rank_points: 'Points',
+    rank_mode:   'Mode',
+    rank_date:   'Date',
+    // Distance hint
+    dist_hint_title: 'What does the distance mean?',
+    dist_hint_body:  "It's the straight-line distance from the center of the country you chose to the correct country. The smaller, the closer you are!",
+    // Dynamic JS texts
+    loading:         '⏳ Loading...',
+    no_players:      'Nobody has played yet. Be the first!',
+    rank_loading:    '⏳ Loading leaderboard...',
+    rank_empty:      '🌍 No records yet!<br>Be the first to save your score.',
+    atlas_empty:     '🔍 No countries matched your search.',
+    saving:          'Saving... ⏳',
+    saved_pos:       "✅ Saved! You're #{pos} on the global leaderboard 🏆",
+    saved_ok:        '✅ Score saved successfully!',
+    correct_hist:    '✓ Correct',
+    wrong_hist:      '✗ Incorrect',
+    back_menu_game:  '🏠 Main menu',
+    see_ranking_btn: '🏆 Leaderboard',
   }
 };
 
@@ -1485,6 +1555,29 @@ function aplicarIdioma() {
     const countdown = $('wordle-countdown');
     const time = countdown ? countdown.textContent : '--:--:--';
     proxLabel.innerHTML = `${t('wordle_next')} <strong id="wordle-countdown">${time}</strong>`;
+  }
+
+  // Hint de distancia en wordle
+  const distTitle = document.querySelector('.wordle-dist-hint-text strong');
+  const distBody  = document.querySelector('.wordle-dist-hint-text');
+  if (distTitle) distTitle.textContent = t('dist_hint_title');
+  if (distBody) {
+    const strong = distBody.querySelector('strong');
+    distBody.textContent = '';
+    if (strong) distBody.appendChild(strong);
+    distBody.appendChild(document.createTextNode(' ' + t('dist_hint_body')));
+  }
+
+  // Botones de resultados
+  const btnCambiarModo = $('btn-cambiar-modo');
+  if (btnCambiarModo) {
+    const span = btnCambiarModo.querySelector('[data-i18n]') || btnCambiarModo;
+    span.textContent = t('back_menu_game');
+  }
+  const btnRankingRes = $('btn-ranking-results');
+  if (btnRankingRes) {
+    const span = btnRankingRes.querySelector('[data-i18n]') || btnRankingRes;
+    span.textContent = t('see_ranking_btn');
   }
 
   // Marca idioma activo en el menú
