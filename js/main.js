@@ -249,6 +249,9 @@ function refrescarMenu() {
   document.querySelectorAll('.modo-card').forEach(c => {
     c.classList.remove('selected');
     c.querySelectorAll('.formato-pill').forEach(p => p.classList.remove('active'));
+    // Resetear altura del wrap para que no quede espacio vacío al volver al menú
+    const wrap = c.querySelector('.formato-inline-wrap');
+    if (wrap) wrap.style.height = '0';
   });
 }
 
