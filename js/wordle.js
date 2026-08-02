@@ -155,7 +155,7 @@ function renderPistas() {
     const vecinos = (VECINOS[pais.nombre] || []);
     const texto   = vecinos.length > 0
       ? vecinos.slice(0, 4).join(', ') + (vecinos.length > 4 ? '…' : '')
-      : 'Ninguno (país insular)';
+      : (typeof t === 'function' ? t('wordle_no_vecinos') : 'Ninguno (país insular)');
     document.getElementById('pista-val-vecinos').textContent = texto;
     document.getElementById('pista-vecinos').classList.add('visible');
   }
@@ -203,7 +203,7 @@ function renderHistorial() {
       <span class="wordle-intento-nombre">${nombre}</span>
       <div class="wordle-intento-meta">
         ${distTxt ? `<span class="wordle-intento-dist">${distTxt}</span>` : ''}
-        <span class="wordle-intento-badge">✗ Incorrecto</span>
+        <span class="wordle-intento-badge">${typeof t === "function" ? t("wordle_incorrect") : "✗ Incorrecto"}</span>
       </div>
     `;
     cont.appendChild(item);
@@ -282,13 +282,13 @@ function procesarIntento() {
   if (!guess || !paisGuess) {
     input.classList.add('shake');
     setTimeout(() => input.classList.remove('shake'), 450);
-    mostrarToast('Escribe un país válido de la lista', 'wrong', 1800);
+    mostrarToast(typeof t === 'function' ? t('toast_pais_invalido') : 'Escribe un país válido de la lista', 'wrong', 1800);
     return;
   }
 
   // ¿Ya lo intentó antes?
   if (wordleEstado.intentosNombres.some(n => n.toLowerCase() === guess.toLowerCase())) {
-    mostrarToast('Ya intentaste ese país', 'wrong', 1500);
+    mostrarToast(typeof t === 'function' ? t('toast_ya_intentado') : 'Ya intentaste ese país', 'wrong', 1500);
     input.value = '';
     return;
   }
@@ -348,17 +348,17 @@ function mostrarResultadoWordle(gano, stats) {
 
   if (gano) {
     document.getElementById('wordle-res-emoji').textContent   = '🎉';
-    document.getElementById('wordle-res-titulo').textContent  = '¡Lo adivinaste!';
+    document.getElementById('wordle-res-titulo').textContent  = typeof t === 'function' ? t('wordle_result_win') : '¡Lo adivinaste!';
     const intento = wordleEstado.intentosFallados + 1;
     document.getElementById('wordle-res-sub').textContent =
-      `Lo lograste en ${intento} ${intento === 1 ? 'intento' : 'intentos'}`;
+      (typeof t === 'function' ? t('wordle_result_win_sub').replace('{n}', intento).replace('{intento}', intento === 1 ? t('wordle_intento_sg') : t('wordle_intento_pl')) : `Lo lograste en ${intento} ${intento === 1 ? 'intento' : 'intentos'}`);
     if (typeof confetti !== 'undefined') {
       confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
     }
   } else {
     document.getElementById('wordle-res-emoji').textContent   = '😔';
-    document.getElementById('wordle-res-titulo').textContent  = `Era ${pais.nombre}`;
-    document.getElementById('wordle-res-sub').textContent     = 'Mañana habrá un nuevo país. ¡Vuelve a intentarlo!';
+    document.getElementById('wordle-res-titulo').textContent  = (typeof t === 'function' ? t('wordle_result_lose_pre') : 'Era ') + pais.nombre;
+    document.getElementById('wordle-res-sub').textContent     = typeof t === 'function' ? t('wordle_result_lose_sub') : 'Mañana habrá un nuevo país. ¡Vuelve a intentarlo!';
   }
 
   // Bandera del país revelado

@@ -620,9 +620,9 @@ function actualizarHUD(resultado) {
 
   // Modo y región en header
   if (juegoActual) {
-    const formatoLabel = juegoActual.formato === 'clasico' ? 'Clásico' : juegoActual.formato === 'supervivencia' ? 'Supervivencia' : 'Contra Reloj';
+    const formatoLabel = tFormato(juegoActual.formato);
     $('game-modo-label').textContent =
-      `${MODOS[juegoActual.modo]?.emoji || ''} ${MODOS[juegoActual.modo]?.label || ''} (${formatoLabel}) · ${REGIONES[juegoActual.region]?.label || ''}`;
+      `${MODOS[juegoActual.modo]?.emoji || ''} ${tModo(juegoActual.modo)} (${formatoLabel}) · ${tRegion(juegoActual.region)}`;
   }
 }
 
@@ -710,8 +710,8 @@ function mostrarResultados() {
   $('res-sub').textContent    = sub;
   $('res-score-val').textContent = r.puntaje.toLocaleString('es-ES');
   
-  const formatoLabel = r.formato === 'clasico' ? 'Clásico' : r.formato === 'supervivencia' ? 'Supervivencia' : 'Contra Reloj';
-  $('res-modo').textContent   = `${MODOS[r.modo]?.label} (${formatoLabel}) · ${REGIONES[r.region]?.label}`;
+  const formatoLabel = tFormato(r.formato);
+  $('res-modo').textContent   = `${tModo(r.modo)} (${formatoLabel}) · ${tRegion(r.region)}`;
 
   $('res-stat-aciertos').textContent  = `${r.aciertos}/${r.total}`;
   $('res-stat-pct').textContent       = `${r.porcentaje}%`;
@@ -932,7 +932,7 @@ function renderizarRanking(modo) {
     }
     datos.slice(0, 10).forEach((entry, i) => {
       const posLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
-      const modoInfo = MODOS[entry.modo] || { emoji: '🗣️', label: entry.modo };
+      const modoInfo = { emoji: MODOS[entry.modo]?.emoji || '🗣️', label: tModo(entry.modo) };
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td class="rank-pos ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${posLabel}</td>
@@ -1245,6 +1245,40 @@ const I18N = {
     toasts_correct: '¡Correcto!',
     toasts_wrong: 'Incorrecto',
     toasts_timeout: '¡Tiempo!',
+    // Modos (para HUD y resultados)
+    modo_banderas:        'Banderas',
+    modo_capitales:       'Capitales',
+    modo_poblacion:       'Población',
+    modo_banderas_inverso:'Banderas Inverso',
+    modo_idiomas_escritura:'Idiomas · Escritura',
+    modo_idiomas_audio:   'Idiomas · Audio',
+    // Formatos
+    fmt_clasico_lbl:      'Clásico',
+    fmt_supervivencia_lbl:'Supervivencia',
+    fmt_contrareloj_lbl:  'Contra Reloj',
+    // Regiones (para HUD y resultados)
+    region_mundo_lbl:     'Todo el mundo',
+    region_norte_lbl:     'América del Norte',
+    region_sur_lbl:       'América del Sur',
+    region_europa_lbl:    'Europa',
+    region_asia_lbl:      'Asia',
+    region_africa_lbl:    'África',
+    region_oceania_lbl:   'Oceanía',
+    // Wordle
+    wordle_incorrect:     '✗ Incorrecto',
+    wordle_result_win:    '¡Lo adivinaste!',
+    wordle_result_lose_pre: 'Era ',
+    wordle_result_win_sub: 'Lo lograste en {n} {intento}',
+    wordle_intento_sg:    'intento',
+    wordle_intento_pl:    'intentos',
+    wordle_result_lose_sub: 'Mañana habrá un nuevo país. ¡Vuelve a intentarlo!',
+    wordle_no_vecinos:    'Ninguno (país insular)',
+    wordle_timeout_safe:  'El país de hoy no tiene coordenadas registradas.',
+    // GeoWordle pistas
+    pista_continente:     t => `Continente: ${t}`,
+    // Toasts wordle
+    toast_pais_invalido:  'Escribe un país válido de la lista',
+    toast_ya_intentado:   'Ya intentaste ese país',
     rank_player: 'Jugador',
     rank_points: 'Puntos',
     rank_mode:   'Modo',
@@ -1383,6 +1417,37 @@ const I18N = {
     toasts_wrong: 'Incorrect',
     toasts_timeout: "Time's up!",
     // Ranking table
+    // Modes
+    modo_banderas:        'Flags',
+    modo_capitales:       'Capitals',
+    modo_poblacion:       'Population',
+    modo_banderas_inverso:'Reverse Flags',
+    modo_idiomas_escritura:'Languages · Writing',
+    modo_idiomas_audio:   'Languages · Audio',
+    // Formats
+    fmt_clasico_lbl:      'Classic',
+    fmt_supervivencia_lbl:'Survival',
+    fmt_contrareloj_lbl:  'Time Attack',
+    // Regions
+    region_mundo_lbl:     'Whole world',
+    region_norte_lbl:     'North America',
+    region_sur_lbl:       'South America',
+    region_europa_lbl:    'Europe',
+    region_asia_lbl:      'Asia',
+    region_africa_lbl:    'Africa',
+    region_oceania_lbl:   'Oceania',
+    // Wordle
+    wordle_incorrect:     '✗ Incorrect',
+    wordle_result_win:    'You got it!',
+    wordle_result_lose_pre: 'It was ',
+    wordle_result_win_sub: 'You got it in {n} {intento}',
+    wordle_intento_sg:    'attempt',
+    wordle_intento_pl:    'attempts',
+    wordle_result_lose_sub: 'There will be a new country tomorrow. Come back!',
+    wordle_no_vecinos:    'None (island country)',
+    wordle_timeout_safe:  "Today's country has no registered coordinates.",
+    toast_pais_invalido:  'Enter a valid country from the list',
+    toast_ya_intentado:   'You already tried that country',
     rank_player: 'Player',
     rank_points: 'Points',
     rank_mode:   'Mode',
@@ -1417,6 +1482,43 @@ let currentLang = detectarIdioma();
 
 function t(key) {
   return I18N[currentLang]?.[key] || I18N['es'][key] || key;
+}
+
+/** Devuelve el label traducido de un modo de juego. */
+function tModo(modo) {
+  const map = {
+    'banderas':         t('modo_banderas'),
+    'capitales':        t('modo_capitales'),
+    'poblacion':        t('modo_poblacion'),
+    'banderas_inverso': t('modo_banderas_inverso'),
+    'idiomas_escritura':t('modo_idiomas_escritura'),
+    'idiomas_audio':    t('modo_idiomas_audio'),
+  };
+  return map[modo] || (MODOS[modo]?.label || modo);
+}
+
+/** Devuelve el label traducido de un formato. */
+function tFormato(formato) {
+  const map = {
+    'clasico':        t('fmt_clasico_lbl'),
+    'supervivencia':  t('fmt_supervivencia_lbl'),
+    'contrareloj':    t('fmt_contrareloj_lbl'),
+  };
+  return map[formato] || formato;
+}
+
+/** Devuelve el label traducido de una región. */
+function tRegion(region) {
+  const map = {
+    'mundo':         t('region_mundo_lbl'),
+    'america_norte': t('region_norte_lbl'),
+    'america_sur':   t('region_sur_lbl'),
+    'europa':        t('region_europa_lbl'),
+    'asia':          t('region_asia_lbl'),
+    'africa':        t('region_africa_lbl'),
+    'oceania':       t('region_oceania_lbl'),
+  };
+  return map[region] || (REGIONES[region]?.label || region);
 }
 
 function aplicarIdioma() {
